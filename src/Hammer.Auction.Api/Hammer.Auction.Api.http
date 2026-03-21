@@ -1,6 +1,0 @@
-@Hammer.Auction.Api_HostAddress = http://localhost:5019
-
-GET {{Hammer.Auction.Api_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###
