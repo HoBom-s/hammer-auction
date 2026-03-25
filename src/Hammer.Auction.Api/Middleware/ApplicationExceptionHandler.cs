@@ -1,0 +1,58 @@
+using Hammer.Auction.Application.Exceptions;
+using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.Mvc;
+using Serilog.Context;
+
+namespace Hammer.Auction.Api.Middleware;
+
+/// <summary>
+/// Global exception handler that maps application exceptions to ProblemDetails responses.
+/// </summary>
+internal sealed class ApplicationExceptionHandler(
+    ILogger<ApplicationExceptionHandler> logger) : IExceptionHandler
+{
+    /// <inheritdoc />
+    public async ValueTask<bool> TryHandleAsync(
+        HttpContext httpContext,
+        Exception exception,
+        CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(httpContext);
+        ArgumentNullException.ThrowIfNull(exception);
+
+        int statusCode;
+        string title;
+
+        (statusCode, title) = exception switch
+        {
+            BadRequestException => (StatusCodes.Status400BadRequest, "Bad Request"),
+            UnauthorizedException => (StatusCodes.Status401Unauthorized, "Unauthorized"),
+            ForbiddenException => (StatusCodes.Status403Forbidden, "Forbidden"),
+            NotFoundException => (StatusCodes.Status404NotFound, "Not Found"),
+            ConflictException => (StatusCodes.Status409Conflict, "Conflict"),
+            ServiceUnavailableException => (StatusCodes.Status503ServiceUnavailable, "Service Unavailable"),
+            _ => (0, string.Empty),
+        };
+
+        if (statusCode == 0)
+        {
+            var traceId = httpContext.Request.Headers["X-Trace-Id"].FirstOrDefault()
+                ?? httpContext.TraceIdentifier;
+
+            using (LogContext.PushProperty("TraceId", traceId))
+            using (LogContext.PushProperty("RequestPath", httpContext.Request.Path.Value))
+            using (LogContext.PushProperty("RequestMethod", httpContext.Request.Method))
+                logger.LogError(exception, "Unhandled exception");
+
+            return false;
+        }
+
+        httpContext.Response.StatusCode = statusCode;
+
+        await httpContext.Response.WriteAsJsonAsync(
+            new ProblemDetails { Status = statusCode, Title = title, Detail = exception.Message },
+            cancellationToken);
+
+        return true;
+    }
+}
