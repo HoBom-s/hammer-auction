@@ -76,7 +76,14 @@ app.Use(async (context, next) =>
     context.Response.Headers["X-XSS-Protection"] = "0";
     context.Response.Headers["Referrer-Policy"] = "strict-origin-when-cross-origin";
     context.Response.Headers["Cache-Control"] = "no-store";
-    context.Response.Headers["Content-Security-Policy"] = "default-src 'none'";
+
+    var path = context.Request.Path.Value ?? string.Empty;
+    var isScalar = path.StartsWith("/scalar", StringComparison.OrdinalIgnoreCase)
+        || path.StartsWith("/openapi", StringComparison.OrdinalIgnoreCase);
+
+    context.Response.Headers["Content-Security-Policy"] = isScalar
+        ? "default-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net"
+        : "default-src 'none'";
 
     await next();
 });
