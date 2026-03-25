@@ -1,0 +1,22 @@
+[*.cs]
+
+# CA1515: Consider making public types internal — xUnit requires public test classes
+dotnet_diagnostic.CA1515.severity = none
+
+# CA1812: Internal class never instantiated — xUnit instantiates test classes via reflection
+dotnet_diagnostic.CA1812.severity = none
+
+# SA1600: Elements should be documented — test methods are self-documenting by name
+dotnet_diagnostic.SA1600.severity = none
+
+# SA1601: Partial elements should be documented
+dotnet_diagnostic.SA1601.severity = none
+
+# CA1062: Validate arguments of public methods — test parameters are framework-provided
+dotnet_diagnostic.CA1062.severity = none
+
+# CA2234: Pass System.Uri instead of string — string URLs are standard in test HTTP clients
+dotnet_diagnostic.CA2234.severity = none
+
+# CA2000: Dispose objects before losing scope — WebApplicationFactory lifecycle managed by test class
+dotnet_diagnostic.CA2000.severity = none
