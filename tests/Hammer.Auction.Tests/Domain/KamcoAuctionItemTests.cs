@@ -54,15 +54,15 @@ public sealed class KamcoAuctionItemTests
             pbctBegnDtm: "20260325100000",
             pbctClsDtm: "20260327170000");
 
-        item.PbctBegnDtm.Offset.Should().Be(TimeSpan.FromHours(9));
+        item.PbctBegnDtm.Offset.Should().Be(TimeSpan.Zero);
         item.PbctBegnDtm.Year.Should().Be(2026);
         item.PbctBegnDtm.Month.Should().Be(3);
         item.PbctBegnDtm.Day.Should().Be(25);
-        item.PbctBegnDtm.Hour.Should().Be(10);
+        item.PbctBegnDtm.Hour.Should().Be(1);
 
-        item.PbctClsDtm.Offset.Should().Be(TimeSpan.FromHours(9));
+        item.PbctClsDtm.Offset.Should().Be(TimeSpan.Zero);
         item.PbctClsDtm.Day.Should().Be(27);
-        item.PbctClsDtm.Hour.Should().Be(17);
+        item.PbctClsDtm.Hour.Should().Be(8);
     }
 
     [Fact]
@@ -207,10 +207,10 @@ public sealed class KamcoAuctionItemTests
         result.Year.Should().Be(2026);
         result.Month.Should().Be(3);
         result.Day.Should().Be(15);
-        result.Hour.Should().Be(14);
+        result.Hour.Should().Be(5);
         result.Minute.Should().Be(30);
         result.Second.Should().Be(0);
-        result.Offset.Should().Be(TimeSpan.FromHours(9));
+        result.Offset.Should().Be(TimeSpan.Zero);
     }
 
     [Fact]

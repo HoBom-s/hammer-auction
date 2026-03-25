@@ -150,10 +150,10 @@ public sealed class KamcoAuctionItemHandlerTests : IDisposable
         await _db.SaveChangesAsync();
 
         KamcoAuctionItem item = await _db.KamcoAuctionItems.SingleAsync();
-        item.PbctBegnDtm.Offset.Should().Be(TimeSpan.FromHours(9));
+        item.PbctBegnDtm.Offset.Should().Be(TimeSpan.Zero);
         item.PbctBegnDtm.Day.Should().Be(15);
         item.PbctClsDtm.Day.Should().Be(20);
-        item.PbctClsDtm.Hour.Should().Be(17);
+        item.PbctClsDtm.Hour.Should().Be(8);
     }
 
     [Fact]

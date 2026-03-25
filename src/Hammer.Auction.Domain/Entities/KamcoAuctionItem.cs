@@ -218,7 +218,7 @@ public sealed class KamcoAuctionItem
     /// </summary>
     /// <returns></returns>
     internal static DateTimeOffset ParseKamcoDateTime(string raw) =>
-        new(
+        new DateTimeOffset(
             DateTime.ParseExact(raw, "yyyyMMddHHmmss", CultureInfo.InvariantCulture),
-            _kst);
+            _kst).ToUniversalTime();
 }
