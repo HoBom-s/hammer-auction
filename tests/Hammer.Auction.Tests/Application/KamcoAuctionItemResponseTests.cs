@@ -28,7 +28,7 @@ public sealed class KamcoAuctionItemResponseTests
             "20260320170000",
             2,
             150,
-            "https://img.example.com/1.jpg");
+            "[\"https://img.example.com/1.jpg\",\"https://img.example.com/2.jpg\"]");
 
         var response = KamcoAuctionItemResponse.FromEntity(entity);
 
@@ -45,7 +45,9 @@ public sealed class KamcoAuctionItemResponseTests
         response.PbctCltrStatNm.Should().Be("공매진행");
         response.UscbdCnt.Should().Be(2);
         response.IqryCnt.Should().Be(150);
-        response.CltrImgFiles.Should().Be("https://img.example.com/1.jpg");
+        response.CltrImgFiles.Should().HaveCount(2);
+        response.CltrImgFiles![0].Should().Be("https://img.example.com/1.jpg");
+        response.CltrImgFiles[1].Should().Be("https://img.example.com/2.jpg");
         response.DiscountRate.Should().Be(20.0);
         response.PbctBegnDtm.Day.Should().Be(15);
         response.PbctClsDtm.Day.Should().Be(20);
