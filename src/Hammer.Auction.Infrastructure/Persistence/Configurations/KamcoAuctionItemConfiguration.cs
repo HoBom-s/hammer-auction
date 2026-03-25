@@ -27,7 +27,7 @@ public sealed class KamcoAuctionItemConfiguration : IEntityTypeConfiguration<Kam
         builder.Property(e => e.NmrdAdrs).IsRequired().HasMaxLength(1000);
         builder.Property(e => e.BidMtdNm).IsRequired().HasMaxLength(100);
         builder.Property(e => e.PbctCltrStatNm).IsRequired().HasMaxLength(100);
-        builder.Property(e => e.CltrImgFiles).HasMaxLength(2048);
+        builder.Property(e => e.CltrImgFiles).HasColumnType("text");
 
         builder.HasIndex(e => e.PbctClsDtm);
         builder.HasIndex(e => e.PbctCltrStatNm);
