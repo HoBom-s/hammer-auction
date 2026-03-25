@@ -19,4 +19,4 @@ internal sealed record KamcoAuctionMessage(
     string PbctClsDtm,
     int UscbdCnt,
     int IqryCnt,
-    string? CltrImgFiles);
+    IReadOnlyList<string>? CltrImgFiles);

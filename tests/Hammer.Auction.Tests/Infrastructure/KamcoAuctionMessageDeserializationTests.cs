@@ -79,14 +79,16 @@ public sealed class KamcoAuctionMessageDeserializationTests
                 "pbctClsDtm": "20260102090000",
                 "uscbdCnt": 0,
                 "iqryCnt": 0,
-                "cltrImgFiles": "https://example.com/image.jpg"
+                "cltrImgFiles": ["https://example.com/image.jpg", "https://example.com/image2.jpg"]
             }
             """;
 
         KamcoAuctionMessage? msg = JsonSerializer.Deserialize<KamcoAuctionMessage>(json, _jsonOptions);
 
         msg.Should().NotBeNull();
-        msg!.CltrImgFiles.Should().Be("https://example.com/image.jpg");
+        msg!.CltrImgFiles.Should().HaveCount(2);
+        msg.CltrImgFiles![0].Should().Be("https://example.com/image.jpg");
+        msg.CltrImgFiles[1].Should().Be("https://example.com/image2.jpg");
     }
 
     [Fact]

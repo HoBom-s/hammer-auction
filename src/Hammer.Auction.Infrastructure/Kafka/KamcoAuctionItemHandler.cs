@@ -81,7 +81,7 @@ internal sealed partial class KamcoAuctionItemHandler(
                     msg.PbctClsDtm,
                     msg.UscbdCnt,
                     msg.IqryCnt,
-                    msg.CltrImgFiles);
+                    SerializeImgFiles(msg.CltrImgFiles));
 
                 updateCount++;
             }
@@ -103,7 +103,7 @@ internal sealed partial class KamcoAuctionItemHandler(
                     msg.PbctClsDtm,
                     msg.UscbdCnt,
                     msg.IqryCnt,
-                    msg.CltrImgFiles);
+                    SerializeImgFiles(msg.CltrImgFiles));
 
                 db.KamcoAuctionItems.Add(newItem);
                 existingMap[key] = newItem;
@@ -113,6 +113,9 @@ internal sealed partial class KamcoAuctionItemHandler(
 
         LogBatchProcessed(logger, insertCount, updateCount);
     }
+
+    private static string? SerializeImgFiles(IReadOnlyList<string>? files) =>
+        files is { Count: > 0 } ? JsonSerializer.Serialize(files) : null;
 
     [LoggerMessage(Level = LogLevel.Information, Message = "Processed batch: {Inserted} inserted, {Updated} updated")]
     private static partial void LogBatchProcessed(ILogger logger, int inserted, int updated);
