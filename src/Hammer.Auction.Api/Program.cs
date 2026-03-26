@@ -31,7 +31,7 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 
 builder.Services
     .AddApplication()
-    .AddInfrastructure(connectionString);
+    .AddInfrastructure(connectionString, builder.Configuration);
 
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
