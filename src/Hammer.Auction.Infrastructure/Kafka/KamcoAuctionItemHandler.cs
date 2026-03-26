@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Hammer.Auction.Application;
 using Hammer.Auction.Domain.Entities;
 using Hammer.Auction.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
@@ -15,7 +16,7 @@ internal sealed partial class KamcoAuctionItemHandler(
     private static readonly JsonSerializerOptions _jsonOptions = new() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
 
     /// <inheritdoc />
-    public string Topic => "onbid-kamco-auction";
+    public string Topic => KafkaTopics.KamcoAuction;
 
     /// <inheritdoc />
     public async Task HandleAsync(IReadOnlyList<string> messages, AuctionDbContext db, CancellationToken ct)
