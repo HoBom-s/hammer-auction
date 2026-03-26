@@ -30,6 +30,8 @@ public static class DependencyInjection
             options.UseNpgsql(connectionString).UseSnakeCaseNamingConvention());
 
         services.AddScoped<IKamcoAuctionItemRepository, KamcoAuctionItemRepository>();
+        services.AddScoped<IInstitutionAuctionItemRepository, InstitutionAuctionItemRepository>();
+        services.AddScoped<IOnbidCodeInfoRepository, OnbidCodeInfoRepository>();
 
         if (!string.IsNullOrWhiteSpace(configuration["Kafka:BootstrapServers"]))
         {
