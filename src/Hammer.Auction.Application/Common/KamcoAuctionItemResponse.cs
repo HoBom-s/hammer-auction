@@ -50,6 +50,15 @@ public sealed record KamcoAuctionItemResponse(
 {
     private static readonly JsonSerializerOptions _jsonOptions = new() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
 
+    /// <summary>Gets the nearby recent trade records (상세 조회 시에만 포함).</summary>
+    public IReadOnlyList<RealEstateTradeResponse>? RecentTrades { get; init; }
+
+    /// <summary>Gets the most recent trade amount in 만원 (목록 조회 시 포함).</summary>
+    public long? LatestTradeAmount { get; init; }
+
+    /// <summary>Gets the most recent trade date as yyyy-MM (목록 조회 시 포함).</summary>
+    public string? LatestTradeDate { get; init; }
+
     /// <summary>
     ///     Maps a domain entity to a response DTO.
     /// </summary>

@@ -16,6 +16,7 @@ internal sealed class GetCodeInfosUseCase(IOnbidCodeInfoRepository repository) :
         CancellationToken ct = default)
     {
         ArgumentNullException.ThrowIfNull(request);
+        PageHelper.Validate(request.Page, request.Size);
 
         (IReadOnlyList<Domain.Entities.OnbidCodeInfo>, int) result = await repository.GetPagedAsync(
             request.Page,
@@ -24,7 +25,7 @@ internal sealed class GetCodeInfosUseCase(IOnbidCodeInfoRepository repository) :
             ct);
 
         var responses = result.Item1.Select(OnbidCodeInfoResponse.FromEntity).ToList();
-        var totalPages = (int)Math.Ceiling((double)result.Item2 / request.Size);
+        var totalPages = PageHelper.CalculateTotalPages(result.Item2, request.Size);
 
         return new PagedResponse<OnbidCodeInfoResponse>(
             responses,

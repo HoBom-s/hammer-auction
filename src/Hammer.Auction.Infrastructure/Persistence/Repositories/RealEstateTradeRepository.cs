@@ -12,31 +12,19 @@ namespace Hammer.Auction.Infrastructure.Persistence.Repositories;
 internal sealed class RealEstateTradeRepository(AuctionDbContext db) : IRealEstateTradeRepository
 {
     /// <inheritdoc />
-    public async Task<(IReadOnlyList<RealEstateTrade> Items, int TotalCount)> GetPagedAsync(
-        int page,
-        int size,
-        string? lawdCd,
-        int? propertyType,
+    public async Task<IReadOnlyList<RealEstateTrade>> FindByLocationAsync(
+        string umdNm,
+        string jibun,
+        int limit,
         CancellationToken ct = default)
     {
-        IQueryable<RealEstateTrade> query = db.RealEstateTrades.AsNoTracking();
-
-        if (!string.IsNullOrWhiteSpace(lawdCd))
-            query = query.Where(e => e.LawdCd == lawdCd);
-
-        if (propertyType.HasValue)
-            query = query.Where(e => e.PropertyType == propertyType.Value);
-
-        var totalCount = await query.CountAsync(ct);
-
-        List<RealEstateTrade> items = await query
+        return await db.RealEstateTrades
+            .AsNoTracking()
+            .Where(e => e.UmdNm == umdNm && e.Jibun == jibun)
             .OrderByDescending(e => e.DealYear)
             .ThenByDescending(e => e.DealMonth)
             .ThenByDescending(e => e.DealDay)
-            .Skip((page - 1) * size)
-            .Take(size)
+            .Take(limit)
             .ToListAsync(ct);
-
-        return (items, totalCount);
     }
 }
