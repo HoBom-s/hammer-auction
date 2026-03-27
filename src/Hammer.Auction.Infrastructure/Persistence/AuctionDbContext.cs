@@ -24,6 +24,11 @@ public sealed class AuctionDbContext(DbContextOptions<AuctionDbContext> options)
     /// </summary>
     public DbSet<OnbidCodeInfo> OnbidCodeInfos => Set<OnbidCodeInfo>();
 
+    /// <summary>
+    /// Gets the real estate trade records table.
+    /// </summary>
+    public DbSet<RealEstateTrade> RealEstateTrades => Set<RealEstateTrade>();
+
     /// <inheritdoc />
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
