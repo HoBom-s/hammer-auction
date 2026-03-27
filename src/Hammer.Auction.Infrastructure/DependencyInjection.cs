@@ -1,5 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
+using Hammer.Auction.Application;
 using Hammer.Auction.Domain.Ports;
+using Hammer.Auction.Infrastructure.Cleanup;
 using Hammer.Auction.Infrastructure.Kafka;
 using Hammer.Auction.Infrastructure.Persistence;
 using Hammer.Auction.Infrastructure.Persistence.Repositories;
@@ -42,6 +44,9 @@ public static class DependencyInjection
             services.AddSingleton<IKafkaMessageHandler, RealEstateTradeHandler>();
             services.AddHostedService<KafkaConsumerWorker>();
         }
+
+        services.Configure<CleanupSettings>(configuration.GetSection("Cleanup"));
+        services.AddHostedService<DataCleanupWorker>();
 
         services
             .AddHealthChecks()

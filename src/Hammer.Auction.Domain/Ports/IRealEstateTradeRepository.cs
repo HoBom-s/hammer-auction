@@ -8,12 +8,11 @@ namespace Hammer.Auction.Domain.Ports;
 public interface IRealEstateTradeRepository
 {
     /// <summary>
-    /// Retrieves a paginated list of trades with optional filtering.
+    /// Finds recent trades matching a specific location (district name + lot number).
     /// </summary>
-    public Task<(IReadOnlyList<RealEstateTrade> Items, int TotalCount)> GetPagedAsync(
-        int page,
-        int size,
-        string? lawdCd,
-        int? propertyType,
+    public Task<IReadOnlyList<RealEstateTrade>> FindByLocationAsync(
+        string umdNm,
+        string jibun,
+        int limit,
         CancellationToken ct = default);
 }

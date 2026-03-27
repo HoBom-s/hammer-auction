@@ -5,46 +5,43 @@ using Hammer.Auction.Infrastructure.Kafka;
 namespace Hammer.Auction.Tests.Infrastructure;
 
 /// <summary>
-/// Tests for <see cref="InstitutionAuctionMessage"/> deserialization from Kafka JSON.
+///     Tests for <see cref="InstitutionAuctionMessage" /> deserialization from Kafka JSON.
 /// </summary>
 public sealed class InstitutionAuctionMessageDeserializationTests
 {
-    private static readonly JsonSerializerOptions _jsonOptions = new()
-    {
-        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-    };
+    private static readonly JsonSerializerOptions _jsonOptions = new() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
 
     [Fact]
     public void Deserialize_WithCamelCaseJson_ShouldMapAllFields()
     {
         var json = """
-            {
-                "plnmNo": 12345,
-                "pbctNo": 67890,
-                "plnmKindCd": "01",
-                "plnmKindNm": "공매공고",
-                "bidDvsnCd": "02",
-                "bidDvsnNm": "전자입찰",
-                "plnmNm": "서울시 강남구 소재 토지 공매",
-                "orgNm": "서울특별시",
-                "plnmDt": "20260325",
-                "orgPlnmNo": "ORG-2026-001",
-                "plnmMnmtNo": "MNMT-001",
-                "bidMtdCd": "03",
-                "bidMtdNm": "일반경쟁",
-                "totAmtUnpcDvsnCd": "01",
-                "totAmtUnpcDvsnNm": "총액",
-                "dpslMtdCd": "01",
-                "dpslMtdNm": "매각",
-                "prptDvsnCd": "01",
-                "prptDvsnNm": "토지",
-                "pbctBegnDtm": "20260325100000",
-                "pbctClsDtm": "20260327170000",
-                "pbctExctDtm": "20260328100000",
-                "ctgrId": "CTG001",
-                "ctgrFullNm": "토지 / 대지"
-            }
-            """;
+                   {
+                       "plnmNo": 12345,
+                       "pbctNo": 67890,
+                       "plnmKindCd": "01",
+                       "plnmKindNm": "공매공고",
+                       "bidDvsnCd": "02",
+                       "bidDvsnNm": "전자입찰",
+                       "plnmNm": "서울시 강남구 소재 토지 공매",
+                       "orgNm": "서울특별시",
+                       "plnmDt": "20260325",
+                       "orgPlnmNo": "ORG-2026-001",
+                       "plnmMnmtNo": "MNMT-001",
+                       "bidMtdCd": "03",
+                       "bidMtdNm": "일반경쟁",
+                       "totAmtUnpcDvsnCd": "01",
+                       "totAmtUnpcDvsnNm": "총액",
+                       "dpslMtdCd": "01",
+                       "dpslMtdNm": "매각",
+                       "prptDvsnCd": "01",
+                       "prptDvsnNm": "토지",
+                       "pbctBegnDtm": "20260325100000",
+                       "pbctClsDtm": "20260327170000",
+                       "pbctExctDtm": "20260328100000",
+                       "ctgrId": "CTG001",
+                       "ctgrFullNm": "토지 / 대지"
+                   }
+                   """;
 
         InstitutionAuctionMessage? msg = JsonSerializer.Deserialize<InstitutionAuctionMessage>(json, _jsonOptions);
 
@@ -79,30 +76,30 @@ public sealed class InstitutionAuctionMessageDeserializationTests
     public void Roundtrip_SerializeAndDeserialize_ShouldPreserveData()
     {
         InstitutionAuctionMessage original = new(
-            PlnmNo: 100,
-            PbctNo: 200,
-            PlnmKindCd: "01",
-            PlnmKindNm: "공매공고",
-            BidDvsnCd: "02",
-            BidDvsnNm: "전자입찰",
-            PlnmNm: "Test Item",
-            OrgNm: "Organization",
-            PlnmDt: "20260301",
-            OrgPlnmNo: "ORG-001",
-            PlnmMnmtNo: "MNMT-001",
-            BidMtdCd: "03",
-            BidMtdNm: "일반경쟁",
-            TotAmtUnpcDvsnCd: "01",
-            TotAmtUnpcDvsnNm: "총액",
-            DpslMtdCd: "01",
-            DpslMtdNm: "매각",
-            PrptDvsnCd: "01",
-            PrptDvsnNm: "토지",
-            PbctBegnDtm: "20260301090000",
-            PbctClsDtm: "20260310170000",
-            PbctExctDtm: "20260311100000",
-            CtgrId: "CTG001",
-            CtgrFullNm: "토지 / 대지");
+            100,
+            200,
+            "01",
+            "공매공고",
+            "02",
+            "전자입찰",
+            "Test Item",
+            "Organization",
+            "20260301",
+            "ORG-001",
+            "MNMT-001",
+            "03",
+            "일반경쟁",
+            "01",
+            "총액",
+            "01",
+            "매각",
+            "01",
+            "토지",
+            "20260301090000",
+            "20260310170000",
+            "20260311100000",
+            "CTG001",
+            "토지 / 대지");
 
         var json = JsonSerializer.Serialize(original, _jsonOptions);
         InstitutionAuctionMessage? deserialized = JsonSerializer.Deserialize<InstitutionAuctionMessage>(json, _jsonOptions);

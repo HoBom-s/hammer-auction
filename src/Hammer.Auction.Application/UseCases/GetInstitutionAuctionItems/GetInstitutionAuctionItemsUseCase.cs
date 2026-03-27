@@ -1,11 +1,12 @@
 using System.Diagnostics.CodeAnalysis;
 using Hammer.Auction.Application.Common;
+using Hammer.Auction.Domain.Entities;
 using Hammer.Auction.Domain.Ports;
 
 namespace Hammer.Auction.Application.UseCases.GetInstitutionAuctionItems;
 
 /// <summary>
-/// Retrieves a paginated list of institution auction items.
+///     Retrieves a paginated list of institution auction items.
 /// </summary>
 [SuppressMessage("Microsoft.Performance", "CA1812:AvoidUninstantiatedInternalClasses", Justification = "Instantiated via DI")]
 internal sealed class GetInstitutionAuctionItemsUseCase(IInstitutionAuctionItemRepository repository) : IGetInstitutionAuctionItemsUseCase
@@ -16,8 +17,9 @@ internal sealed class GetInstitutionAuctionItemsUseCase(IInstitutionAuctionItemR
         CancellationToken ct = default)
     {
         ArgumentNullException.ThrowIfNull(request);
+        PageHelper.Validate(request.Page, request.Size);
 
-        (IReadOnlyList<Domain.Entities.InstitutionAuctionItem>, int) result = await repository.GetPagedAsync(
+        (IReadOnlyList<InstitutionAuctionItem>, int) result = await repository.GetPagedAsync(
             request.Page,
             request.Size,
             request.Org,
@@ -25,8 +27,10 @@ internal sealed class GetInstitutionAuctionItemsUseCase(IInstitutionAuctionItemR
             request.Keyword,
             ct);
 
-        var responses = result.Item1.Select(InstitutionAuctionItemResponse.FromEntity).ToList();
-        var totalPages = (int)Math.Ceiling((double)result.Item2 / request.Size);
+        (IReadOnlyList<InstitutionAuctionItem> institutionAuctionItems, var totalCount) = result;
+
+        var responses = institutionAuctionItems.Select(InstitutionAuctionItemResponse.FromEntity).ToList();
+        var totalPages = PageHelper.CalculateTotalPages(totalCount, request.Size);
 
         return new PagedResponse<InstitutionAuctionItemResponse>(
             responses,

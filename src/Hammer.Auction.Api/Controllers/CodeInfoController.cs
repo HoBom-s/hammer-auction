@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Hammer.Auction.Api.Controllers;
 
 /// <summary>
-/// Provides endpoints for Onbid code info entries.
+///     Provides endpoints for Onbid code info entries.
 /// </summary>
 [ApiController]
 [Route("code-infos")]
@@ -19,7 +19,7 @@ public sealed class CodeInfoController(
     IGetCodeInfoByIdUseCase getCodeInfoById) : ControllerBase
 {
     /// <summary>
-    /// Retrieves a paginated list of code info entries.
+    ///     Retrieves a paginated list of code info entries.
     /// </summary>
     [HttpGet]
     public async Task<ActionResult<PagedResponse<OnbidCodeInfoResponse>>> GetCodeInfosAsync(
@@ -35,7 +35,7 @@ public sealed class CodeInfoController(
     }
 
     /// <summary>
-    /// Retrieves a single code info entry by its ID.
+    ///     Retrieves a single code info entry by its ID.
     /// </summary>
     [HttpGet("{id:long}")]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
