@@ -7,7 +7,9 @@ using Microsoft.AspNetCore.Mvc;
 namespace Hammer.Auction.Api.Controllers;
 
 /// <summary>
-///     Provides endpoints for Onbid code info entries.
+///     온비드 코드 정보 조회 API.
+///     공매 물건의 용도 분류 체계(카테고리 트리)를 조회합니다.
+///     parentId를 지정하면 해당 코드의 하위 코드만 반환됩니다.
 /// </summary>
 [ApiController]
 [Route("code-infos")]
@@ -19,8 +21,13 @@ public sealed class CodeInfoController(
     IGetCodeInfoByIdUseCase getCodeInfoById) : ControllerBase
 {
     /// <summary>
-    ///     Retrieves a paginated list of code info entries.
+    ///     코드 정보 목록을 페이징 조회합니다.
+    ///     parentId를 지정하면 해당 상위 코드의 하위 코드만 반환됩니다.
     /// </summary>
+    /// <param name="page">페이지 번호 (1부터 시작, 기본값: 1).</param>
+    /// <param name="size">페이지당 항목 수 (기본값: 100, 최대: 100).</param>
+    /// <param name="parentId">상위 코드 ID 필터 (예: ROOT). 완전 일치.</param>
+    /// <param name="ct">Cancellation token.</param>
     [HttpGet]
     public async Task<ActionResult<PagedResponse<OnbidCodeInfoResponse>>> GetCodeInfosAsync(
         [FromQuery] int page = 1,
@@ -35,8 +42,10 @@ public sealed class CodeInfoController(
     }
 
     /// <summary>
-    ///     Retrieves a single code info entry by its ID.
+    ///     코드 정보 상세를 조회합니다.
     /// </summary>
+    /// <param name="id">코드 고유 식별자.</param>
+    /// <param name="ct">Cancellation token.</param>
     [HttpGet("{id:long}")]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<OnbidCodeInfoResponse>> GetCodeInfoByIdAsync(long id, CancellationToken ct = default)

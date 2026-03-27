@@ -61,7 +61,7 @@ if (!app.Environment.IsEnvironment("Testing"))
     await db.Database.MigrateAsync();
 }
 
-if (app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment() || app.Environment.IsEnvironment("Testing"))
 {
     app.MapOpenApi();
     app.MapScalarApiReference();

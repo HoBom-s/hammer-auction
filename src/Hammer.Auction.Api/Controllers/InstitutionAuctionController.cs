@@ -7,7 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 namespace Hammer.Auction.Api.Controllers;
 
 /// <summary>
-/// Provides endpoints for institution auction items.
+///     기관 공매 물건 조회 API.
+///     온비드에 등록된 각 기관(캠코 외)의 공매 물건 목록 및 상세 정보를 제공합니다.
 /// </summary>
 [ApiController]
 [Route("institution-auctions/items")]
@@ -19,8 +20,14 @@ public sealed class InstitutionAuctionController(
     IGetInstitutionAuctionItemByIdUseCase getItemById) : ControllerBase
 {
     /// <summary>
-    /// Retrieves a paginated list of institution auction items.
+    ///     기관 공매 물건 목록을 페이징 조회합니다.
     /// </summary>
+    /// <param name="page">페이지 번호 (1부터 시작, 기본값: 1).</param>
+    /// <param name="size">페이지당 항목 수 (기본값: 20, 최대: 100).</param>
+    /// <param name="org">공고기관명 필터 (예: 한국자산관리공사). 완전 일치.</param>
+    /// <param name="category">용도 필터 (예: 토지, 건물). 부분 일치.</param>
+    /// <param name="keyword">키워드 검색 (공고명). 부분 일치.</param>
+    /// <param name="ct">Cancellation token.</param>
     [HttpGet]
     public async Task<ActionResult<PagedResponse<InstitutionAuctionItemResponse>>> GetItemsAsync(
         [FromQuery] int page = 1,
@@ -37,8 +44,10 @@ public sealed class InstitutionAuctionController(
     }
 
     /// <summary>
-    /// Retrieves a single institution auction item by its ID.
+    ///     기관 공매 물건 상세 정보를 조회합니다.
     /// </summary>
+    /// <param name="id">물건 고유 식별자.</param>
+    /// <param name="ct">Cancellation token.</param>
     [HttpGet("{id:long}")]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<InstitutionAuctionItemResponse>> GetItemByIdAsync(long id, CancellationToken ct = default)
