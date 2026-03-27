@@ -5,6 +5,7 @@ using Hammer.Auction.Application.UseCases.GetCodeInfoById;
 using Hammer.Auction.Application.UseCases.GetCodeInfos;
 using Hammer.Auction.Application.UseCases.GetInstitutionAuctionItemById;
 using Hammer.Auction.Application.UseCases.GetInstitutionAuctionItems;
+using Hammer.Auction.Application.UseCases.GetRealEstateTrades;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Hammer.Auction.Application;
@@ -27,6 +28,7 @@ public static class DependencyInjection
         services.AddScoped<IGetInstitutionAuctionItemByIdUseCase, GetInstitutionAuctionItemByIdUseCase>();
         services.AddScoped<IGetCodeInfosUseCase, GetCodeInfosUseCase>();
         services.AddScoped<IGetCodeInfoByIdUseCase, GetCodeInfoByIdUseCase>();
+        services.AddScoped<IGetRealEstateTradesUseCase, GetRealEstateTradesUseCase>();
 
         return services;
     }

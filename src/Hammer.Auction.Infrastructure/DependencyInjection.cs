@@ -32,12 +32,14 @@ public static class DependencyInjection
         services.AddScoped<IKamcoAuctionItemRepository, KamcoAuctionItemRepository>();
         services.AddScoped<IInstitutionAuctionItemRepository, InstitutionAuctionItemRepository>();
         services.AddScoped<IOnbidCodeInfoRepository, OnbidCodeInfoRepository>();
+        services.AddScoped<IRealEstateTradeRepository, RealEstateTradeRepository>();
 
         if (!string.IsNullOrWhiteSpace(configuration["Kafka:BootstrapServers"]))
         {
             services.AddSingleton<IKafkaMessageHandler, KamcoAuctionItemHandler>();
             services.AddSingleton<IKafkaMessageHandler, InstitutionAuctionItemHandler>();
             services.AddSingleton<IKafkaMessageHandler, OnbidCodeInfoHandler>();
+            services.AddSingleton<IKafkaMessageHandler, RealEstateTradeHandler>();
             services.AddHostedService<KafkaConsumerWorker>();
         }
 
