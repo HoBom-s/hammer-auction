@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Hammer.Auction.Application.Analysis;
 using Hammer.Auction.Domain.Entities;
 
 namespace Hammer.Auction.Application.Common;
@@ -58,6 +59,9 @@ public sealed record KamcoAuctionItemResponse(
 
     /// <summary>Gets the most recent trade date as yyyy-MM (목록 조회 시 포함).</summary>
     public string? LatestTradeDate { get; init; }
+
+    /// <summary>Gets the investment analysis (상세 조회 시에만 포함).</summary>
+    public InvestmentAnalysis? InvestmentAnalysis { get; init; }
 
     /// <summary>
     ///     Maps a domain entity to a response DTO.

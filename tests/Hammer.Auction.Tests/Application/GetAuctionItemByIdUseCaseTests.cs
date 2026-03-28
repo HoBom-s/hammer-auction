@@ -1,4 +1,5 @@
 using FluentAssertions;
+using Hammer.Auction.Application.Analysis;
 using Hammer.Auction.Application.Common;
 using Hammer.Auction.Application.Exceptions;
 using Hammer.Auction.Application.UseCases.GetAuctionItemById;
@@ -204,6 +205,71 @@ public sealed class GetAuctionItemByIdUseCaseTests
         result.RecentTrades.Should().HaveCount(1);
         result.LatestTradeAmount.Should().BeNull();
         result.LatestTradeDate.Should().BeNull();
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_WithMatchingTrades_ShouldIncludeInvestmentAnalysisAsync()
+    {
+        KamcoAuctionItem entity = CreateEntity(
+            1,
+            100,
+            200,
+            300,
+            "부곡 롯데캐슬",
+            ldnmAdrs: "부산광역시 금정구 부곡동 970 롯데캐슬디아망",
+            apslAsesAvgAmt: 100_000_000,
+            minBidPrc: 80_000_000);
+        _repository.GetByIdAsync(1L, Arg.Any<CancellationToken>()).Returns(entity);
+
+        List<RealEstateTrade> trades =
+        [
+            CreateTrade("26260", "부곡동", "970", 9500, 2026, 1, 15),
+        ];
+        _tradeRepository.FindByLocationAsync("부곡동", "970", 20, Arg.Any<CancellationToken>())
+            .Returns(trades);
+
+        KamcoAuctionItemResponse result = await _sut.ExecuteAsync(1L);
+
+        result.InvestmentAnalysis.Should().NotBeNull();
+        result.InvestmentAnalysis!.MarketGap.Should().NotBeNull();
+        result.InvestmentAnalysis.InvestmentScore.Should().NotBeNull();
+        result.InvestmentAnalysis.BidPriceGuide.Should().NotBeNull();
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_WithNoTrades_ShouldReturnNullInvestmentAnalysisAsync()
+    {
+        KamcoAuctionItem entity = CreateEntity(
+            1,
+            100,
+            200,
+            300,
+            "토지",
+            ldnmAdrs: "경기도 남양주시 진접읍 내각리 165-77");
+        _repository.GetByIdAsync(1L, Arg.Any<CancellationToken>()).Returns(entity);
+        _tradeRepository.FindByLocationAsync("내각리", "165-77", 20, Arg.Any<CancellationToken>())
+            .Returns(Array.Empty<RealEstateTrade>());
+
+        KamcoAuctionItemResponse result = await _sut.ExecuteAsync(1L);
+
+        result.InvestmentAnalysis.Should().BeNull();
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_WithUnparsableAddress_ShouldReturnNullInvestmentAnalysisAsync()
+    {
+        KamcoAuctionItem entity = CreateEntity(
+            1,
+            100,
+            200,
+            300,
+            "유가증권",
+            ldnmAdrs: "보관중인 건설공제조합 출자증권");
+        _repository.GetByIdAsync(1L, Arg.Any<CancellationToken>()).Returns(entity);
+
+        KamcoAuctionItemResponse result = await _sut.ExecuteAsync(1L);
+
+        result.InvestmentAnalysis.Should().BeNull();
     }
 
     private static KamcoAuctionItem CreateEntity(

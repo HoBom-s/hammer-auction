@@ -246,8 +246,8 @@ dotnet_diagnostic.SA1614.severity = none
 dotnet_diagnostic.SA1200.severity = none
 # SA1633: File should have header
 dotnet_diagnostic.SA1633.severity = none
-# SA1600: Elements should be documented
-dotnet_diagnostic.SA1600.severity = warning
+# SA1600: Elements should be documented (internal 코드에 전부 강제는 과도)
+dotnet_diagnostic.SA1600.severity = suggestion
 # SA1602: Enumeration items should be documented
 dotnet_diagnostic.SA1602.severity = suggestion
 # SA1309: Field names should not begin with underscore (conflicts with _field naming)
@@ -256,3 +256,15 @@ dotnet_diagnostic.SA1309.severity = none
 dotnet_diagnostic.SA1503.severity = none
 # SA0001: XML comment analysis disabled
 dotnet_diagnostic.SA0001.severity = none
+# SA1407: Arithmetic precedence parentheses (린터와 충돌 — 괄호 추가↔삭제 무한 루프)
+dotnet_diagnostic.SA1407.severity = none
+# SA1515: Single-line comment must be preceded by blank line (불필요한 빈줄 강제)
+dotnet_diagnostic.SA1515.severity = none
+# SA1512: Single-line comment must not be followed by blank line (주석 위치 마이크로매니징)
+dotnet_diagnostic.SA1512.severity = none
+# SA1122: Use string.Empty for empty strings ("" vs string.Empty 가독성 차이 없음)
+dotnet_diagnostic.SA1122.severity = none
+# SA1117: Parameters must be on separate lines (테스트 코드에서 특히 불편)
+dotnet_diagnostic.SA1117.severity = none
+# SA1201: Elements must appear in correct order (리팩터링마다 멤버 재배치 강제)
+dotnet_diagnostic.SA1201.severity = none

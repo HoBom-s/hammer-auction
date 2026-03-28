@@ -1,4 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
+using Hammer.Auction.Application.Analysis;
 using Hammer.Auction.Application.Common;
 using Hammer.Auction.Application.Exceptions;
 using Hammer.Auction.Domain.Entities;
@@ -24,7 +25,20 @@ internal sealed class GetAuctionItemByIdUseCase(
 
         IReadOnlyList<RealEstateTradeResponse> trades = await FetchRecentTradesAsync(item.LdnmAdrs, ct);
 
-        return KamcoAuctionItemResponse.FromEntity(item) with { RecentTrades = trades };
+        InvestmentAnalysis? analysis = InvestmentAnalyzer.Analyze(
+            item.MinBidPrc,
+            item.UscbdCnt,
+            item.IqryCnt,
+            item.CtgrFullNm,
+            trades,
+            DateOnly.FromDateTime(DateTime.UtcNow),
+            item.ApslAsesAvgAmt);
+
+        return KamcoAuctionItemResponse.FromEntity(item) with
+        {
+            RecentTrades = trades,
+            InvestmentAnalysis = analysis,
+        };
     }
 
     private async Task<IReadOnlyList<RealEstateTradeResponse>> FetchRecentTradesAsync(
