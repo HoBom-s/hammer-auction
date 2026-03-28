@@ -52,6 +52,7 @@ public sealed class AuctionController(
     /// <param name="id">물건 고유 식별자.</param>
     /// <param name="ct">Cancellation token.</param>
     [HttpGet("{id:long}")]
+    [ProducesResponseType<KamcoAuctionItemResponse>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<KamcoAuctionItemResponse>> GetItemByIdAsync(long id, CancellationToken ct = default)
     {
