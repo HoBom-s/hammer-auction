@@ -64,19 +64,13 @@ internal sealed class GetAuctionItemsUseCase(
         // Deduplicate locations to avoid redundant queries
         Dictionary<(string UmdNm, string Jibun), List<string>> locationToAddresses = AddressParser.Reverse(addressToLocation);
 
-        // Fetch latest trade per unique location in parallel
-        List<(List<string> Addresses, Task<IReadOnlyList<RealEstateTrade>> Task)> queries = locationToAddresses
-            .Select(kv => (kv.Value, tradeRepository.FindByLocationAsync(kv.Key.UmdNm, kv.Key.Jibun, 1, ct)))
-            .ToList();
-
-        await Task.WhenAll(queries.Select(q => q.Task));
-
-        // Map back to addresses
+        // DbContext는 thread-safe하지 않으므로 순차 조회
         var dict = new Dictionary<string, RealEstateTrade>();
 
-        foreach ((List<string> addresses, Task<IReadOnlyList<RealEstateTrade>> task) in queries)
+        foreach (((string UmdNm, string Jibun) location, List<string> addresses) in locationToAddresses)
         {
-            IReadOnlyList<RealEstateTrade> trades = await task;
+            IReadOnlyList<RealEstateTrade> trades = await tradeRepository.FindByLocationAsync(
+                location.UmdNm, location.Jibun, 1, ct);
 
             if (trades.Count > 0)
             {
