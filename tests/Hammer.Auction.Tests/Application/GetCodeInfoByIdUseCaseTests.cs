@@ -4,6 +4,7 @@ using Hammer.Auction.Application.Exceptions;
 using Hammer.Auction.Application.UseCases.GetCodeInfoById;
 using Hammer.Auction.Domain.Entities;
 using Hammer.Auction.Domain.Ports;
+using Hammer.Auction.Domain.ValueObjects;
 using NSubstitute;
 
 namespace Hammer.Auction.Tests.Application;
@@ -25,9 +26,9 @@ public sealed class GetCodeInfoByIdUseCaseTests
     public async Task ExecuteAsync_WithExistingItem_ShouldReturnResponseAsync()
     {
         OnbidCodeInfo entity = CreateEntity(1, "CTG01", "토지");
-        _repository.GetByIdAsync(1L, Arg.Any<CancellationToken>()).Returns(entity);
+        _repository.GetByIdAsync(new OnbidCodeInfoId(1), Arg.Any<CancellationToken>()).Returns(entity);
 
-        OnbidCodeInfoResponse result = await _sut.ExecuteAsync(1L);
+        OnbidCodeInfoResponse result = await _sut.ExecuteAsync(new OnbidCodeInfoId(1));
 
         result.Should().NotBeNull();
         result.CtgrId.Should().Be("CTG01");
@@ -37,9 +38,9 @@ public sealed class GetCodeInfoByIdUseCaseTests
     [Fact]
     public async Task ExecuteAsync_WithNonExistentItem_ShouldThrowNotFoundExceptionAsync()
     {
-        _repository.GetByIdAsync(999L, Arg.Any<CancellationToken>()).Returns((OnbidCodeInfo?)null);
+        _repository.GetByIdAsync(new OnbidCodeInfoId(999), Arg.Any<CancellationToken>()).Returns((OnbidCodeInfo?)null);
 
-        Func<Task> act = () => _sut.ExecuteAsync(999L);
+        Func<Task> act = () => _sut.ExecuteAsync(new OnbidCodeInfoId(999));
 
         await act.Should().ThrowAsync<NotFoundException>()
             .WithMessage("*999*");

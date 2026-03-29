@@ -1,5 +1,6 @@
 using FluentAssertions;
 using Hammer.Auction.Domain.Entities;
+using Hammer.Auction.Domain.ValueObjects;
 using Hammer.Auction.Infrastructure.Persistence;
 using Hammer.Auction.Infrastructure.Persistence.Repositories;
 
@@ -55,7 +56,7 @@ public sealed class OnbidCodeInfoRepositoryTests(InMemoryFixture fixture) : IAsy
         await using AuctionDbContext db = fixture.CreateDbContext();
         var repo = new OnbidCodeInfoRepository(db);
 
-        OnbidCodeInfo? result = await repo.GetByIdAsync(_seededIds[0]);
+        OnbidCodeInfo? result = await repo.GetByIdAsync(new OnbidCodeInfoId(_seededIds[0]));
 
         result.Should().NotBeNull();
         result!.CtgrId.Should().Be(_ctgrIdA);
@@ -67,7 +68,7 @@ public sealed class OnbidCodeInfoRepositoryTests(InMemoryFixture fixture) : IAsy
         await using AuctionDbContext db = fixture.CreateDbContext();
         var repo = new OnbidCodeInfoRepository(db);
 
-        OnbidCodeInfo? result = await repo.GetByIdAsync(-1);
+        OnbidCodeInfo? result = await repo.GetByIdAsync(new OnbidCodeInfoId(long.MaxValue));
 
         result.Should().BeNull();
     }

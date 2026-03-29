@@ -4,6 +4,7 @@ using Hammer.Auction.Application.Common;
 using Hammer.Auction.Application.Exceptions;
 using Hammer.Auction.Domain.Entities;
 using Hammer.Auction.Domain.Ports;
+using Hammer.Auction.Domain.ValueObjects;
 
 namespace Hammer.Auction.Application.UseCases.GetAuctionItemById;
 
@@ -18,7 +19,7 @@ internal sealed class GetAuctionItemByIdUseCase(
     private const int RecentTradeLimit = 20;
 
     /// <inheritdoc />
-    public async Task<KamcoAuctionItemResponse> ExecuteAsync(long id, CancellationToken ct = default)
+    public async Task<KamcoAuctionItemResponse> ExecuteAsync(KamcoAuctionItemId id, CancellationToken ct = default)
     {
         KamcoAuctionItem item = await repository.GetByIdAsync(id, ct)
             ?? throw new NotFoundException($"Auction item with ID {id} was not found.");

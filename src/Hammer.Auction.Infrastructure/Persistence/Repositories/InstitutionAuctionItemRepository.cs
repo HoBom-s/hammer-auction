@@ -1,6 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using Hammer.Auction.Domain.Entities;
 using Hammer.Auction.Domain.Ports;
+using Hammer.Auction.Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 
 namespace Hammer.Auction.Infrastructure.Persistence.Repositories;
@@ -12,9 +13,9 @@ namespace Hammer.Auction.Infrastructure.Persistence.Repositories;
 internal sealed class InstitutionAuctionItemRepository(AuctionDbContext db) : IInstitutionAuctionItemRepository
 {
     /// <inheritdoc />
-    public async Task<InstitutionAuctionItem?> GetByIdAsync(long id, CancellationToken ct = default)
+    public async Task<InstitutionAuctionItem?> GetByIdAsync(InstitutionAuctionItemId id, CancellationToken ct = default)
     {
-        return await db.InstitutionAuctionItems.FindAsync([id], ct);
+        return await db.InstitutionAuctionItems.FindAsync([id.Value], ct);
     }
 
     /// <inheritdoc />

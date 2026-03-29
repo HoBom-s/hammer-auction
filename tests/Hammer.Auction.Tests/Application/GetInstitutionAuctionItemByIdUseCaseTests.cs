@@ -4,6 +4,7 @@ using Hammer.Auction.Application.Exceptions;
 using Hammer.Auction.Application.UseCases.GetInstitutionAuctionItemById;
 using Hammer.Auction.Domain.Entities;
 using Hammer.Auction.Domain.Ports;
+using Hammer.Auction.Domain.ValueObjects;
 using NSubstitute;
 
 namespace Hammer.Auction.Tests.Application;
@@ -25,9 +26,9 @@ public sealed class GetInstitutionAuctionItemByIdUseCaseTests
     public async Task ExecuteAsync_WithExistingItem_ShouldReturnResponseAsync()
     {
         InstitutionAuctionItem entity = CreateEntity(1, 100, 200);
-        _repository.GetByIdAsync(1L, Arg.Any<CancellationToken>()).Returns(entity);
+        _repository.GetByIdAsync(new InstitutionAuctionItemId(1), Arg.Any<CancellationToken>()).Returns(entity);
 
-        InstitutionAuctionItemResponse result = await _sut.ExecuteAsync(1L);
+        InstitutionAuctionItemResponse result = await _sut.ExecuteAsync(new InstitutionAuctionItemId(1));
 
         result.Should().NotBeNull();
         result.PlnmNo.Should().Be(100);
@@ -37,9 +38,9 @@ public sealed class GetInstitutionAuctionItemByIdUseCaseTests
     [Fact]
     public async Task ExecuteAsync_WithNonExistentItem_ShouldThrowNotFoundExceptionAsync()
     {
-        _repository.GetByIdAsync(999L, Arg.Any<CancellationToken>()).Returns((InstitutionAuctionItem?)null);
+        _repository.GetByIdAsync(new InstitutionAuctionItemId(999), Arg.Any<CancellationToken>()).Returns((InstitutionAuctionItem?)null);
 
-        Func<Task> act = () => _sut.ExecuteAsync(999L);
+        Func<Task> act = () => _sut.ExecuteAsync(new InstitutionAuctionItemId(999));
 
         await act.Should().ThrowAsync<NotFoundException>()
             .WithMessage("*999*");

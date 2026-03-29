@@ -2,6 +2,7 @@ using System.Diagnostics.CodeAnalysis;
 using Hammer.Auction.Application.Common;
 using Hammer.Auction.Application.Exceptions;
 using Hammer.Auction.Domain.Ports;
+using Hammer.Auction.Domain.ValueObjects;
 
 namespace Hammer.Auction.Application.UseCases.GetInstitutionAuctionItemById;
 
@@ -12,7 +13,7 @@ namespace Hammer.Auction.Application.UseCases.GetInstitutionAuctionItemById;
 internal sealed class GetInstitutionAuctionItemByIdUseCase(IInstitutionAuctionItemRepository repository) : IGetInstitutionAuctionItemByIdUseCase
 {
     /// <inheritdoc />
-    public async Task<InstitutionAuctionItemResponse> ExecuteAsync(long id, CancellationToken ct = default)
+    public async Task<InstitutionAuctionItemResponse> ExecuteAsync(InstitutionAuctionItemId id, CancellationToken ct = default)
     {
         Domain.Entities.InstitutionAuctionItem item = await repository.GetByIdAsync(id, ct)
             ?? throw new NotFoundException($"Institution auction item with ID {id} was not found.");

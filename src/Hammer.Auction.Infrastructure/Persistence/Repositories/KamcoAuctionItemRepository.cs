@@ -1,6 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using Hammer.Auction.Domain.Entities;
 using Hammer.Auction.Domain.Ports;
+using Hammer.Auction.Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 
 namespace Hammer.Auction.Infrastructure.Persistence.Repositories;
@@ -36,9 +37,31 @@ internal sealed class KamcoAuctionItemRepository(AuctionDbContext db) : IKamcoAu
     }
 
     /// <inheritdoc />
-    public async Task<KamcoAuctionItem?> GetByIdAsync(long id, CancellationToken ct = default)
+    public async Task<KamcoAuctionItem?> GetByIdAsync(KamcoAuctionItemId id, CancellationToken ct = default)
     {
-        return await db.KamcoAuctionItems.FindAsync([id], ct);
+        return await db.KamcoAuctionItems.FindAsync([id.Value], ct);
+    }
+
+    /// <inheritdoc />
+    public async Task<IReadOnlyList<(string CtgrFullNm, int Count)>> CountByCtgrFullNmAsync(
+        DateTimeOffset? createdFrom,
+        DateTimeOffset? createdTo,
+        CancellationToken ct = default)
+    {
+        IQueryable<KamcoAuctionItem> query = db.KamcoAuctionItems.AsNoTracking();
+
+        if (createdFrom.HasValue)
+            query = query.Where(e => e.CreatedAt >= createdFrom.Value);
+
+        if (createdTo.HasValue)
+            query = query.Where(e => e.CreatedAt < createdTo.Value);
+
+        var rows = await query
+            .GroupBy(e => e.CtgrFullNm)
+            .Select(g => new { g.Key, Count = g.Count() })
+            .ToListAsync(ct);
+
+        return rows.Select(x => (x.Key, x.Count)).ToList();
     }
 
     /// <inheritdoc />

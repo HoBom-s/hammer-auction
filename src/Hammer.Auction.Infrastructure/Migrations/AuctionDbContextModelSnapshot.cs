@@ -358,6 +358,111 @@ namespace Hammer.Auction.Infrastructure.Migrations
                     b.ToTable("onbid_code_infos", (string)null);
                 });
 
+            modelBuilder.Entity("Hammer.Auction.Domain.Entities.Quiz", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Choice1")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("choice1");
+
+                    b.Property<string>("Choice2")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("choice2");
+
+                    b.Property<string>("Choice3")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("choice3");
+
+                    b.Property<string>("Choice4")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("choice4");
+
+                    b.Property<int>("CorrectIndex")
+                        .HasColumnType("integer")
+                        .HasColumnName("correct_index");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("Explanation")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)")
+                        .HasColumnName("explanation");
+
+                    b.Property<string>("Question")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("question");
+
+                    b.HasKey("Id")
+                        .HasName("pk_quizzes");
+
+                    b.ToTable("quizzes", (string)null);
+                });
+
+            modelBuilder.Entity("Hammer.Auction.Domain.Entities.QuizAttempt", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTimeOffset>("AttemptedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("attempted_at");
+
+                    b.Property<bool>("IsCorrect")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_correct");
+
+                    b.Property<long?>("QuizId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("quiz_id");
+
+                    b.Property<int>("SelectedIndex")
+                        .HasColumnType("integer")
+                        .HasColumnName("selected_index");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_quiz_attempts");
+
+                    b.HasIndex("QuizId")
+                        .HasDatabaseName("ix_quiz_attempts_quiz_id");
+
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("ix_quiz_attempts_user_id");
+
+                    b.HasIndex("UserId", "QuizId")
+                        .HasDatabaseName("ix_quiz_attempts_user_id_quiz_id");
+
+                    b.ToTable("quiz_attempts", (string)null);
+                });
+
             modelBuilder.Entity("Hammer.Auction.Domain.Entities.RealEstateTrade", b =>
                 {
                     b.Property<long>("Id")
@@ -448,6 +553,15 @@ namespace Hammer.Auction.Infrastructure.Migrations
                         .HasDatabaseName("ix_real_estate_trades_lawd_cd_property_type_jibun_deal_year_de");
 
                     b.ToTable("real_estate_trades", (string)null);
+                });
+
+            modelBuilder.Entity("Hammer.Auction.Domain.Entities.QuizAttempt", b =>
+                {
+                    b.HasOne("Hammer.Auction.Domain.Entities.Quiz", null)
+                        .WithMany()
+                        .HasForeignKey("QuizId")
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .HasConstraintName("fk_quiz_attempts_quizzes_quiz_id");
                 });
 #pragma warning restore 612, 618
         }

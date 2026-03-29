@@ -2,6 +2,7 @@ using System.Diagnostics.CodeAnalysis;
 using Hammer.Auction.Application.Common;
 using Hammer.Auction.Application.UseCases.GetAuctionItemById;
 using Hammer.Auction.Application.UseCases.GetAuctionItems;
+using Hammer.Auction.Domain.ValueObjects;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Hammer.Auction.Api.Controllers;
@@ -51,10 +52,10 @@ public sealed class AuctionController(
     /// </summary>
     /// <param name="id">물건 고유 식별자.</param>
     /// <param name="ct">Cancellation token.</param>
-    [HttpGet("{id:long}")]
+    [HttpGet("{id}")]
     [ProducesResponseType<KamcoAuctionItemResponse>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<KamcoAuctionItemResponse>> GetItemByIdAsync(long id, CancellationToken ct = default)
+    public async Task<ActionResult<KamcoAuctionItemResponse>> GetItemByIdAsync(KamcoAuctionItemId id, CancellationToken ct = default)
     {
         KamcoAuctionItemResponse result = await getAuctionItemById.ExecuteAsync(id, ct);
 

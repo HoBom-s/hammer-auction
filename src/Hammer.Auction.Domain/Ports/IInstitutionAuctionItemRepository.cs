@@ -1,4 +1,5 @@
 using Hammer.Auction.Domain.Entities;
+using Hammer.Auction.Domain.ValueObjects;
 
 namespace Hammer.Auction.Domain.Ports;
 
@@ -10,7 +11,7 @@ public interface IInstitutionAuctionItemRepository
     /// <summary>
     /// Finds an item by its surrogate primary key.
     /// </summary>
-    public Task<InstitutionAuctionItem?> GetByIdAsync(long id, CancellationToken ct = default);
+    public Task<InstitutionAuctionItem?> GetByIdAsync(InstitutionAuctionItemId id, CancellationToken ct = default);
 
     /// <summary>
     /// Retrieves a paginated list of items with optional filtering.

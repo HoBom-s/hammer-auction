@@ -1,4 +1,5 @@
 using Hammer.Auction.Domain.Entities;
+using Hammer.Auction.Domain.ValueObjects;
 
 namespace Hammer.Auction.Domain.Ports;
 
@@ -10,7 +11,7 @@ public interface IOnbidCodeInfoRepository
     /// <summary>
     /// Finds an entry by its surrogate primary key.
     /// </summary>
-    public Task<OnbidCodeInfo?> GetByIdAsync(long id, CancellationToken ct = default);
+    public Task<OnbidCodeInfo?> GetByIdAsync(OnbidCodeInfoId id, CancellationToken ct = default);
 
     /// <summary>
     /// Retrieves a paginated list of entries with optional filtering.

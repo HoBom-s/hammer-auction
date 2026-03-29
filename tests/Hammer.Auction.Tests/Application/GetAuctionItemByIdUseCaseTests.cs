@@ -5,6 +5,7 @@ using Hammer.Auction.Application.Exceptions;
 using Hammer.Auction.Application.UseCases.GetAuctionItemById;
 using Hammer.Auction.Domain.Entities;
 using Hammer.Auction.Domain.Ports;
+using Hammer.Auction.Domain.ValueObjects;
 using NSubstitute;
 
 namespace Hammer.Auction.Tests.Application;
@@ -27,11 +28,11 @@ public sealed class GetAuctionItemByIdUseCaseTests
     public async Task ExecuteAsync_WithExistingItem_ShouldReturnResponseAsync()
     {
         KamcoAuctionItem entity = CreateEntity(1, 100, 200, 300, "Test Item");
-        _repository.GetByIdAsync(1L, Arg.Any<CancellationToken>()).Returns(entity);
+        _repository.GetByIdAsync(new KamcoAuctionItemId(1), Arg.Any<CancellationToken>()).Returns(entity);
         _tradeRepository.FindByLocationAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<int>(), Arg.Any<CancellationToken>())
             .Returns(Array.Empty<RealEstateTrade>());
 
-        KamcoAuctionItemResponse result = await _sut.ExecuteAsync(1L);
+        KamcoAuctionItemResponse result = await _sut.ExecuteAsync(new KamcoAuctionItemId(1));
 
         result.Should().NotBeNull();
         result.PlnmNo.Should().Be(100);
@@ -43,9 +44,9 @@ public sealed class GetAuctionItemByIdUseCaseTests
     [Fact]
     public async Task ExecuteAsync_WithNonExistentItem_ShouldThrowNotFoundExceptionAsync()
     {
-        _repository.GetByIdAsync(999L, Arg.Any<CancellationToken>()).Returns((KamcoAuctionItem?)null);
+        _repository.GetByIdAsync(new KamcoAuctionItemId(999), Arg.Any<CancellationToken>()).Returns((KamcoAuctionItem?)null);
 
-        Func<Task> act = () => _sut.ExecuteAsync(999L);
+        Func<Task> act = () => _sut.ExecuteAsync(new KamcoAuctionItemId(999));
 
         await act.Should().ThrowAsync<NotFoundException>()
             .WithMessage("*999*");
@@ -55,11 +56,11 @@ public sealed class GetAuctionItemByIdUseCaseTests
     public async Task ExecuteAsync_ShouldMapDiscountRateCorrectlyAsync()
     {
         KamcoAuctionItem entity = CreateEntity(1, 100, 200, 300, "Item", minBidPrc: 80, apslAsesAvgAmt: 100);
-        _repository.GetByIdAsync(1L, Arg.Any<CancellationToken>()).Returns(entity);
+        _repository.GetByIdAsync(new KamcoAuctionItemId(1), Arg.Any<CancellationToken>()).Returns(entity);
         _tradeRepository.FindByLocationAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<int>(), Arg.Any<CancellationToken>())
             .Returns(Array.Empty<RealEstateTrade>());
 
-        KamcoAuctionItemResponse result = await _sut.ExecuteAsync(1L);
+        KamcoAuctionItemResponse result = await _sut.ExecuteAsync(new KamcoAuctionItemId(1));
 
         result.DiscountRate.Should().Be(20.0);
     }
@@ -74,7 +75,7 @@ public sealed class GetAuctionItemByIdUseCaseTests
             300,
             "부곡 롯데캐슬",
             ldnmAdrs: "부산광역시 금정구 부곡동 970 롯데캐슬디아망 제103동 제9층 제901호");
-        _repository.GetByIdAsync(1L, Arg.Any<CancellationToken>()).Returns(entity);
+        _repository.GetByIdAsync(new KamcoAuctionItemId(1), Arg.Any<CancellationToken>()).Returns(entity);
 
         List<RealEstateTrade> trades =
         [
@@ -84,7 +85,7 @@ public sealed class GetAuctionItemByIdUseCaseTests
         _tradeRepository.FindByLocationAsync("부곡동", "970", 20, Arg.Any<CancellationToken>())
             .Returns(trades);
 
-        KamcoAuctionItemResponse result = await _sut.ExecuteAsync(1L);
+        KamcoAuctionItemResponse result = await _sut.ExecuteAsync(new KamcoAuctionItemId(1));
 
         result.RecentTrades.Should().NotBeNull();
         result.RecentTrades.Should().HaveCount(2);
@@ -102,9 +103,9 @@ public sealed class GetAuctionItemByIdUseCaseTests
             300,
             "유가증권",
             ldnmAdrs: "보관중인 건설공제조합 출자증권");
-        _repository.GetByIdAsync(1L, Arg.Any<CancellationToken>()).Returns(entity);
+        _repository.GetByIdAsync(new KamcoAuctionItemId(1), Arg.Any<CancellationToken>()).Returns(entity);
 
-        KamcoAuctionItemResponse result = await _sut.ExecuteAsync(1L);
+        KamcoAuctionItemResponse result = await _sut.ExecuteAsync(new KamcoAuctionItemId(1));
 
         result.RecentTrades.Should().NotBeNull();
         result.RecentTrades.Should().BeEmpty();
@@ -122,11 +123,11 @@ public sealed class GetAuctionItemByIdUseCaseTests
             300,
             "토지",
             ldnmAdrs: "경기도 남양주시 진접읍 내각리 165-77");
-        _repository.GetByIdAsync(1L, Arg.Any<CancellationToken>()).Returns(entity);
+        _repository.GetByIdAsync(new KamcoAuctionItemId(1), Arg.Any<CancellationToken>()).Returns(entity);
         _tradeRepository.FindByLocationAsync("내각리", "165-77", 20, Arg.Any<CancellationToken>())
             .Returns(Array.Empty<RealEstateTrade>());
 
-        KamcoAuctionItemResponse result = await _sut.ExecuteAsync(1L);
+        KamcoAuctionItemResponse result = await _sut.ExecuteAsync(new KamcoAuctionItemId(1));
 
         result.RecentTrades.Should().NotBeNull();
         result.RecentTrades.Should().BeEmpty();
@@ -142,11 +143,11 @@ public sealed class GetAuctionItemByIdUseCaseTests
             300,
             "부곡 롯데캐슬",
             ldnmAdrs: "부산광역시 금정구 부곡동 970 롯데캐슬디아망");
-        _repository.GetByIdAsync(1L, Arg.Any<CancellationToken>()).Returns(entity);
+        _repository.GetByIdAsync(new KamcoAuctionItemId(1), Arg.Any<CancellationToken>()).Returns(entity);
         _tradeRepository.FindByLocationAsync("부곡동", "970", 20, Arg.Any<CancellationToken>())
             .Returns(Array.Empty<RealEstateTrade>());
 
-        await _sut.ExecuteAsync(1L);
+        await _sut.ExecuteAsync(new KamcoAuctionItemId(1));
 
         await _tradeRepository.Received(1).FindByLocationAsync(
             "부곡동",
@@ -165,13 +166,13 @@ public sealed class GetAuctionItemByIdUseCaseTests
             300,
             "부곡 롯데캐슬",
             ldnmAdrs: "부산광역시 금정구 부곡동 970 롯데캐슬디아망");
-        _repository.GetByIdAsync(1L, Arg.Any<CancellationToken>()).Returns(entity);
+        _repository.GetByIdAsync(new KamcoAuctionItemId(1), Arg.Any<CancellationToken>()).Returns(entity);
 
         List<RealEstateTrade> trades = [CreateTrade("26260", "부곡동", "970", 85000, 2026, 3, 15)];
         _tradeRepository.FindByLocationAsync("부곡동", "970", 20, Arg.Any<CancellationToken>())
             .Returns(trades);
 
-        KamcoAuctionItemResponse result = await _sut.ExecuteAsync(1L);
+        KamcoAuctionItemResponse result = await _sut.ExecuteAsync(new KamcoAuctionItemId(1));
 
         RealEstateTradeResponse trade = result.RecentTrades![0];
         trade.UmdNm.Should().Be("부곡동");
@@ -194,13 +195,13 @@ public sealed class GetAuctionItemByIdUseCaseTests
             300,
             "부곡 롯데캐슬",
             ldnmAdrs: "부산광역시 금정구 부곡동 970 롯데캐슬디아망");
-        _repository.GetByIdAsync(1L, Arg.Any<CancellationToken>()).Returns(entity);
+        _repository.GetByIdAsync(new KamcoAuctionItemId(1), Arg.Any<CancellationToken>()).Returns(entity);
 
         List<RealEstateTrade> trades = [CreateTrade("26260", "부곡동", "970", 85000, 2026, 1, 15)];
         _tradeRepository.FindByLocationAsync("부곡동", "970", 20, Arg.Any<CancellationToken>())
             .Returns(trades);
 
-        KamcoAuctionItemResponse result = await _sut.ExecuteAsync(1L);
+        KamcoAuctionItemResponse result = await _sut.ExecuteAsync(new KamcoAuctionItemId(1));
 
         result.RecentTrades.Should().HaveCount(1);
         result.LatestTradeAmount.Should().BeNull();
@@ -219,7 +220,7 @@ public sealed class GetAuctionItemByIdUseCaseTests
             ldnmAdrs: "부산광역시 금정구 부곡동 970 롯데캐슬디아망",
             apslAsesAvgAmt: 100_000_000,
             minBidPrc: 80_000_000);
-        _repository.GetByIdAsync(1L, Arg.Any<CancellationToken>()).Returns(entity);
+        _repository.GetByIdAsync(new KamcoAuctionItemId(1), Arg.Any<CancellationToken>()).Returns(entity);
 
         List<RealEstateTrade> trades =
         [
@@ -228,7 +229,7 @@ public sealed class GetAuctionItemByIdUseCaseTests
         _tradeRepository.FindByLocationAsync("부곡동", "970", 20, Arg.Any<CancellationToken>())
             .Returns(trades);
 
-        KamcoAuctionItemResponse result = await _sut.ExecuteAsync(1L);
+        KamcoAuctionItemResponse result = await _sut.ExecuteAsync(new KamcoAuctionItemId(1));
 
         result.InvestmentAnalysis.Should().NotBeNull();
         result.InvestmentAnalysis!.MarketGap.Should().NotBeNull();
@@ -246,11 +247,11 @@ public sealed class GetAuctionItemByIdUseCaseTests
             300,
             "토지",
             ldnmAdrs: "경기도 남양주시 진접읍 내각리 165-77");
-        _repository.GetByIdAsync(1L, Arg.Any<CancellationToken>()).Returns(entity);
+        _repository.GetByIdAsync(new KamcoAuctionItemId(1), Arg.Any<CancellationToken>()).Returns(entity);
         _tradeRepository.FindByLocationAsync("내각리", "165-77", 20, Arg.Any<CancellationToken>())
             .Returns(Array.Empty<RealEstateTrade>());
 
-        KamcoAuctionItemResponse result = await _sut.ExecuteAsync(1L);
+        KamcoAuctionItemResponse result = await _sut.ExecuteAsync(new KamcoAuctionItemId(1));
 
         result.InvestmentAnalysis.Should().BeNull();
     }
@@ -265,9 +266,9 @@ public sealed class GetAuctionItemByIdUseCaseTests
             300,
             "유가증권",
             ldnmAdrs: "보관중인 건설공제조합 출자증권");
-        _repository.GetByIdAsync(1L, Arg.Any<CancellationToken>()).Returns(entity);
+        _repository.GetByIdAsync(new KamcoAuctionItemId(1), Arg.Any<CancellationToken>()).Returns(entity);
 
-        KamcoAuctionItemResponse result = await _sut.ExecuteAsync(1L);
+        KamcoAuctionItemResponse result = await _sut.ExecuteAsync(new KamcoAuctionItemId(1));
 
         result.InvestmentAnalysis.Should().BeNull();
     }

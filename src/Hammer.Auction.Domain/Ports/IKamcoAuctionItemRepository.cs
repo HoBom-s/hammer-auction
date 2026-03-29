@@ -1,4 +1,5 @@
 using Hammer.Auction.Domain.Entities;
+using Hammer.Auction.Domain.ValueObjects;
 
 namespace Hammer.Auction.Domain.Ports;
 
@@ -23,7 +24,7 @@ public interface IKamcoAuctionItemRepository
     /// <summary>
     /// Finds an item by its surrogate primary key.
     /// </summary>
-    public Task<KamcoAuctionItem?> GetByIdAsync(long id, CancellationToken ct = default);
+    public Task<KamcoAuctionItem?> GetByIdAsync(KamcoAuctionItemId id, CancellationToken ct = default);
 
     /// <summary>
     /// Retrieves a paginated list of items with optional filtering.
@@ -34,5 +35,14 @@ public interface IKamcoAuctionItemRepository
         string? status,
         string? category,
         string? keyword,
+        CancellationToken ct = default);
+
+    /// <summary>
+    /// Counts items grouped by <see cref="KamcoAuctionItem.CtgrFullNm"/> within a date range.
+    /// When <paramref name="createdFrom"/> is <c>null</c>, all items are counted regardless of creation date.
+    /// </summary>
+    public Task<IReadOnlyList<(string CtgrFullNm, int Count)>> CountByCtgrFullNmAsync(
+        DateTimeOffset? createdFrom,
+        DateTimeOffset? createdTo,
         CancellationToken ct = default);
 }

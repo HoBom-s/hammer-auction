@@ -1,5 +1,6 @@
 using FluentAssertions;
 using Hammer.Auction.Domain.Entities;
+using Hammer.Auction.Domain.ValueObjects;
 using Hammer.Auction.Infrastructure.Persistence;
 using Hammer.Auction.Infrastructure.Persistence.Repositories;
 
@@ -47,7 +48,7 @@ public sealed class InstitutionAuctionItemRepositoryTests(InMemoryFixture fixtur
         await using AuctionDbContext db = fixture.CreateDbContext();
         var repo = new InstitutionAuctionItemRepository(db);
 
-        InstitutionAuctionItem? result = await repo.GetByIdAsync(_seededIds[0]);
+        InstitutionAuctionItem? result = await repo.GetByIdAsync(new InstitutionAuctionItemId(_seededIds[0]));
 
         result.Should().NotBeNull();
         result!.OrgNm.Should().Be("서울특별시");
@@ -59,7 +60,7 @@ public sealed class InstitutionAuctionItemRepositoryTests(InMemoryFixture fixtur
         await using AuctionDbContext db = fixture.CreateDbContext();
         var repo = new InstitutionAuctionItemRepository(db);
 
-        InstitutionAuctionItem? result = await repo.GetByIdAsync(-1);
+        InstitutionAuctionItem? result = await repo.GetByIdAsync(new InstitutionAuctionItemId(long.MaxValue));
 
         result.Should().BeNull();
     }
