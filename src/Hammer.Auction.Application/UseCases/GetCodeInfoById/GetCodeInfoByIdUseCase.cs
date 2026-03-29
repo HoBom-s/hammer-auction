@@ -2,6 +2,7 @@ using System.Diagnostics.CodeAnalysis;
 using Hammer.Auction.Application.Common;
 using Hammer.Auction.Application.Exceptions;
 using Hammer.Auction.Domain.Ports;
+using Hammer.Auction.Domain.ValueObjects;
 
 namespace Hammer.Auction.Application.UseCases.GetCodeInfoById;
 
@@ -12,7 +13,7 @@ namespace Hammer.Auction.Application.UseCases.GetCodeInfoById;
 internal sealed class GetCodeInfoByIdUseCase(IOnbidCodeInfoRepository repository) : IGetCodeInfoByIdUseCase
 {
     /// <inheritdoc />
-    public async Task<OnbidCodeInfoResponse> ExecuteAsync(long id, CancellationToken ct = default)
+    public async Task<OnbidCodeInfoResponse> ExecuteAsync(OnbidCodeInfoId id, CancellationToken ct = default)
     {
         Domain.Entities.OnbidCodeInfo item = await repository.GetByIdAsync(id, ct)
             ?? throw new NotFoundException($"Code info with ID {id} was not found.");

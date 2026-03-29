@@ -5,6 +5,7 @@ using Hammer.Auction.Application.Common;
 using Hammer.Auction.Application.Exceptions;
 using Hammer.Auction.Application.UseCases.GetInstitutionAuctionItemById;
 using Hammer.Auction.Application.UseCases.GetInstitutionAuctionItems;
+using Hammer.Auction.Domain.ValueObjects;
 using Hammer.Auction.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -117,7 +118,7 @@ public sealed class InstitutionAuctionControllerTests : IDisposable
     public async Task GetItemById_WithExistingItem_ShouldReturn200Async()
     {
         InstitutionAuctionItemResponse item = CreateResponse(1);
-        _getItemById.ExecuteAsync(1L, Arg.Any<CancellationToken>()).Returns(item);
+        _getItemById.ExecuteAsync(new InstitutionAuctionItemId(1), Arg.Any<CancellationToken>()).Returns(item);
 
         HttpResponseMessage response = await _client.GetAsync("/institution-auctions/items/1");
 
@@ -133,7 +134,7 @@ public sealed class InstitutionAuctionControllerTests : IDisposable
     [Fact]
     public async Task GetItemById_WithNonExistentItem_ShouldReturn404Async()
     {
-        _getItemById.ExecuteAsync(999L, Arg.Any<CancellationToken>())
+        _getItemById.ExecuteAsync(new InstitutionAuctionItemId(999), Arg.Any<CancellationToken>())
             .ThrowsAsync(new NotFoundException("InstitutionAuctionItem with ID 999 was not found"));
 
         HttpResponseMessage response = await _client.GetAsync("/institution-auctions/items/999");

@@ -1,5 +1,6 @@
 using FluentAssertions;
 using Hammer.Auction.Domain.Entities;
+using Hammer.Auction.Domain.ValueObjects;
 using Hammer.Auction.Infrastructure.Persistence;
 using Hammer.Auction.Infrastructure.Persistence.Repositories;
 
@@ -47,7 +48,7 @@ public sealed class KamcoAuctionItemRepositoryTests(InMemoryFixture fixture) : I
         await using AuctionDbContext db = fixture.CreateDbContext();
         var repo = new KamcoAuctionItemRepository(db);
 
-        KamcoAuctionItem? result = await repo.GetByIdAsync(_seededIds[0]);
+        KamcoAuctionItem? result = await repo.GetByIdAsync(new KamcoAuctionItemId(_seededIds[0]));
 
         result.Should().NotBeNull();
         result!.CltrNm.Should().Be("강남 토지");
@@ -59,7 +60,7 @@ public sealed class KamcoAuctionItemRepositoryTests(InMemoryFixture fixture) : I
         await using AuctionDbContext db = fixture.CreateDbContext();
         var repo = new KamcoAuctionItemRepository(db);
 
-        KamcoAuctionItem? result = await repo.GetByIdAsync(-1);
+        KamcoAuctionItem? result = await repo.GetByIdAsync(new KamcoAuctionItemId(long.MaxValue));
 
         result.Should().BeNull();
     }
@@ -166,7 +167,7 @@ public sealed class KamcoAuctionItemRepositoryTests(InMemoryFixture fixture) : I
 
         _seededIds.Add(newItem.Id);
 
-        KamcoAuctionItem? found = await repo.GetByIdAsync(newItem.Id);
+        KamcoAuctionItem? found = await repo.GetByIdAsync(new KamcoAuctionItemId(newItem.Id));
         found.Should().NotBeNull();
         found!.CltrNm.Should().Be("신규 물건");
     }

@@ -1,4 +1,5 @@
 using Hammer.Auction.Application.Common;
+using Hammer.Auction.Domain.ValueObjects;
 
 namespace Hammer.Auction.Application.UseCases.GetCodeInfoById;
 
@@ -10,5 +11,5 @@ public interface IGetCodeInfoByIdUseCase
     /// <summary>
     /// Retrieves a code info entry by its surrogate ID.
     /// </summary>
-    public Task<OnbidCodeInfoResponse> ExecuteAsync(long id, CancellationToken ct = default);
+    public Task<OnbidCodeInfoResponse> ExecuteAsync(OnbidCodeInfoId id, CancellationToken ct = default);
 }

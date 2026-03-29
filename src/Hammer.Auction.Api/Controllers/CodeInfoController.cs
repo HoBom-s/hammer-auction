@@ -2,6 +2,7 @@ using System.Diagnostics.CodeAnalysis;
 using Hammer.Auction.Application.Common;
 using Hammer.Auction.Application.UseCases.GetCodeInfoById;
 using Hammer.Auction.Application.UseCases.GetCodeInfos;
+using Hammer.Auction.Domain.ValueObjects;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Hammer.Auction.Api.Controllers;
@@ -46,9 +47,9 @@ public sealed class CodeInfoController(
     /// </summary>
     /// <param name="id">코드 고유 식별자.</param>
     /// <param name="ct">Cancellation token.</param>
-    [HttpGet("{id:long}")]
+    [HttpGet("{id}")]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<OnbidCodeInfoResponse>> GetCodeInfoByIdAsync(long id, CancellationToken ct = default)
+    public async Task<ActionResult<OnbidCodeInfoResponse>> GetCodeInfoByIdAsync(OnbidCodeInfoId id, CancellationToken ct = default)
     {
         OnbidCodeInfoResponse result = await getCodeInfoById.ExecuteAsync(id, ct);
 

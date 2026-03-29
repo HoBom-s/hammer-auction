@@ -35,6 +35,8 @@ public static class DependencyInjection
         services.AddScoped<IInstitutionAuctionItemRepository, InstitutionAuctionItemRepository>();
         services.AddScoped<IOnbidCodeInfoRepository, OnbidCodeInfoRepository>();
         services.AddScoped<IRealEstateTradeRepository, RealEstateTradeRepository>();
+        services.AddScoped<IQuizRepository, QuizRepository>();
+        services.AddScoped<IQuizAttemptRepository, QuizAttemptRepository>();
 
         if (!string.IsNullOrWhiteSpace(configuration["Kafka:BootstrapServers"]))
         {

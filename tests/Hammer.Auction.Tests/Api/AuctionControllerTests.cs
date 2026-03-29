@@ -4,6 +4,7 @@ using FluentAssertions;
 using Hammer.Auction.Application.Common;
 using Hammer.Auction.Domain.Entities;
 using Hammer.Auction.Domain.Ports;
+using Hammer.Auction.Domain.ValueObjects;
 using Hammer.Auction.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -111,7 +112,7 @@ public sealed class AuctionControllerTests : IDisposable
     {
         KamcoAuctionItem entity = CreateEntity(1, "Test Item");
         typeof(KamcoAuctionItem).GetProperty(nameof(KamcoAuctionItem.Id))!.SetValue(entity, 1L);
-        _repository.GetByIdAsync(1L, Arg.Any<CancellationToken>()).Returns(entity);
+        _repository.GetByIdAsync(new KamcoAuctionItemId(1), Arg.Any<CancellationToken>()).Returns(entity);
 
         HttpResponseMessage response = await _client.GetAsync("/hammer-auctions/items/1");
 
@@ -127,7 +128,7 @@ public sealed class AuctionControllerTests : IDisposable
     [Fact]
     public async Task GetItemById_WithNonExistentItem_ShouldReturn404Async()
     {
-        _repository.GetByIdAsync(999L, Arg.Any<CancellationToken>())
+        _repository.GetByIdAsync(new KamcoAuctionItemId(999), Arg.Any<CancellationToken>())
             .Returns((KamcoAuctionItem?)null);
 
         HttpResponseMessage response = await _client.GetAsync("/hammer-auctions/items/999");

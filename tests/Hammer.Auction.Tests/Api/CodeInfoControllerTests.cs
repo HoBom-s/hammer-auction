@@ -5,6 +5,7 @@ using Hammer.Auction.Application.Common;
 using Hammer.Auction.Application.Exceptions;
 using Hammer.Auction.Application.UseCases.GetCodeInfoById;
 using Hammer.Auction.Application.UseCases.GetCodeInfos;
+using Hammer.Auction.Domain.ValueObjects;
 using Hammer.Auction.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -111,7 +112,7 @@ public sealed class CodeInfoControllerTests : IDisposable
     public async Task GetCodeInfoById_WithExistingItem_ShouldReturn200Async()
     {
         OnbidCodeInfoResponse item = CreateResponse(1);
-        _getCodeInfoById.ExecuteAsync(1L, Arg.Any<CancellationToken>()).Returns(item);
+        _getCodeInfoById.ExecuteAsync(new OnbidCodeInfoId(1), Arg.Any<CancellationToken>()).Returns(item);
 
         HttpResponseMessage response = await _client.GetAsync("/code-infos/1");
 
@@ -127,7 +128,7 @@ public sealed class CodeInfoControllerTests : IDisposable
     [Fact]
     public async Task GetCodeInfoById_WithNonExistentItem_ShouldReturn404Async()
     {
-        _getCodeInfoById.ExecuteAsync(999L, Arg.Any<CancellationToken>())
+        _getCodeInfoById.ExecuteAsync(new OnbidCodeInfoId(999), Arg.Any<CancellationToken>())
             .ThrowsAsync(new NotFoundException("OnbidCodeInfo with ID 999 was not found"));
 
         HttpResponseMessage response = await _client.GetAsync("/code-infos/999");
