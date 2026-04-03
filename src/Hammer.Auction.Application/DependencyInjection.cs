@@ -1,4 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
+using Hammer.Auction.Application.Notifications;
+using Hammer.Auction.Application.Ports;
 using Hammer.Auction.Application.UseCases.CreateQuiz;
 using Hammer.Auction.Application.UseCases.DeleteQuiz;
 using Hammer.Auction.Application.UseCases.GetAuctionItemById;
@@ -41,6 +43,7 @@ public static class DependencyInjection
         services.AddScoped<IDeleteQuizUseCase, DeleteQuizUseCase>();
         services.AddScoped<IGetQuizzesUseCase, GetQuizzesUseCase>();
         services.AddScoped<ISubmitQuizAttemptUseCase, SubmitQuizAttemptUseCase>();
+        services.AddScoped<INotificationSender, NotificationSender>();
         return services;
     }
 }
