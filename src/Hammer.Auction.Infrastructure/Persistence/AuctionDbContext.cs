@@ -39,6 +39,11 @@ public sealed class AuctionDbContext(DbContextOptions<AuctionDbContext> options)
     /// </summary>
     public DbSet<QuizAttempt> QuizAttempts => Set<QuizAttempt>();
 
+    /// <summary>
+    /// Gets the outbox messages table.
+    /// </summary>
+    public DbSet<OutboxMessage> OutboxMessages => Set<OutboxMessage>();
+
     /// <inheritdoc />
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

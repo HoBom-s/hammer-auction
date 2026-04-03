@@ -16,6 +16,7 @@ namespace Hammer.Auction.Infrastructure.Cleanup;
 internal sealed partial class DataCleanupWorker(
     IServiceScopeFactory scopeFactory,
     IOptions<CleanupSettings> options,
+    IOptions<OutboxSettings> outboxOptions,
     ILogger<DataCleanupWorker> logger) : BackgroundService
 {
     /// <summary>
@@ -60,7 +61,15 @@ internal sealed partial class DataCleanupWorker(
             .Where(e => e.CreatedAt < tradeCutoff)
             .ExecuteDeleteAsync(ct);
 
-        LogCleanupCompleted(logger, kamcoDeleted, institutionDeleted, tradeDeleted);
+        OutboxSettings outboxSettings = outboxOptions.Value;
+        DateTimeOffset outboxCutoff = now.AddDays(-outboxSettings.RetentionDays);
+
+        var outboxDeleted = await db.OutboxMessages
+            .Where(e => (e.ProcessedAt != null && e.ProcessedAt < outboxCutoff)
+                || e.RetryCount >= outboxSettings.MaxRetryCount)
+            .ExecuteDeleteAsync(ct);
+
+        LogCleanupCompleted(logger, kamcoDeleted, institutionDeleted, tradeDeleted, outboxDeleted);
     }
 
     /// <inheritdoc />
@@ -100,8 +109,8 @@ internal sealed partial class DataCleanupWorker(
 
     [LoggerMessage(
         Level = LogLevel.Information,
-        Message = "Data cleanup completed: KAMCO={KamcoDeleted}, Institution={InstitutionDeleted}, RealEstateTrade={TradeDeleted}")]
-    private static partial void LogCleanupCompleted(ILogger logger, int kamcoDeleted, int institutionDeleted, int tradeDeleted);
+        Message = "Data cleanup completed: KAMCO={KamcoDeleted}, Institution={InstitutionDeleted}, RealEstateTrade={TradeDeleted}, Outbox={OutboxDeleted}")]
+    private static partial void LogCleanupCompleted(ILogger logger, int kamcoDeleted, int institutionDeleted, int tradeDeleted, int outboxDeleted);
 
     [LoggerMessage(Level = LogLevel.Error, Message = "Data cleanup failed")]
     private static partial void LogCleanupFailed(ILogger logger, Exception ex);
