@@ -94,36 +94,19 @@ internal sealed partial class OutboxPublisherWorker : BackgroundService
 
         OutboxSettings settings = _options.Value;
 
-        await using NpgsqlConnection conn = new(_connectionString);
-        await conn.OpenAsync(stoppingToken);
-        await using NpgsqlCommand listenCmd = conn.CreateCommand();
-        listenCmd.CommandText = $"LISTEN {Channel}";
-        await listenCmd.ExecuteNonQueryAsync(stoppingToken);
-        LogListening(_logger, Channel);
-
         while (!stoppingToken.IsCancellationRequested)
         {
             try
             {
-                // NOTIFY 수신 또는 30초 폴백 타임아웃
-                using CancellationTokenSource timeoutCts = new(_fallbackInterval);
+                await using var conn = new NpgsqlConnection(_connectionString);
+                await conn.OpenAsync(stoppingToken);
 
-                using var linkedCts =
-                    CancellationTokenSource.CreateLinkedTokenSource(stoppingToken, timeoutCts.Token);
+                await using NpgsqlCommand listenCmd = conn.CreateCommand();
+                listenCmd.CommandText = $"LISTEN {Channel}";
+                await listenCmd.ExecuteNonQueryAsync(stoppingToken);
+                LogListening(_logger, Channel);
 
-                try
-                {
-                    await conn.WaitAsync(linkedCts.Token);
-                }
-                catch (OperationCanceledException) when (!stoppingToken.IsCancellationRequested)
-                {
-                    // 30초 타임아웃 - 폴백 폴링
-                }
-
-                var published = await PublishPendingAsync(settings.BatchSize, settings.MaxRetryCount, stoppingToken);
-
-                if (published > 0)
-                    LogPublished(_logger, published);
+                await ListenLoopAsync(conn, settings, stoppingToken);
             }
             catch (OperationCanceledException)
             {
@@ -158,4 +141,30 @@ internal sealed partial class OutboxPublisherWorker : BackgroundService
 
     [LoggerMessage(Level = LogLevel.Warning, Message = "Outbox message {MessageId} failed (retry {RetryCount}/{MaxRetryCount})")]
     private static partial void LogMessageFailed(ILogger logger, Guid messageId, int retryCount, int maxRetryCount, Exception ex);
+
+    private async Task ListenLoopAsync(NpgsqlConnection conn, OutboxSettings settings, CancellationToken stoppingToken)
+    {
+        while (!stoppingToken.IsCancellationRequested)
+        {
+            // NOTIFY 수신 또는 30초 폴백 타임아웃
+            using CancellationTokenSource timeoutCts = new(_fallbackInterval);
+
+            using var linkedCts =
+                CancellationTokenSource.CreateLinkedTokenSource(stoppingToken, timeoutCts.Token);
+
+            try
+            {
+                await conn.WaitAsync(linkedCts.Token);
+            }
+            catch (OperationCanceledException) when (!stoppingToken.IsCancellationRequested)
+            {
+                // 30초 타임아웃 - 폴백 폴링
+            }
+
+            var published = await PublishPendingAsync(settings.BatchSize, settings.MaxRetryCount, stoppingToken);
+
+            if (published > 0)
+                LogPublished(_logger, published);
+        }
+    }
 }
