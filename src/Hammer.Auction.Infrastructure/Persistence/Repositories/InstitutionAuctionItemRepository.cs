@@ -48,4 +48,38 @@ internal sealed class InstitutionAuctionItemRepository(AuctionDbContext db) : II
 
         return (items, totalCount);
     }
+
+    /// <inheritdoc />
+    public async Task<IReadOnlyList<InstitutionAuctionItem>> GetByDateRangeAsync(
+        DateTimeOffset from,
+        DateTimeOffset toExclusive,
+        CancellationToken ct = default)
+    {
+        return await db.InstitutionAuctionItems
+            .AsNoTracking()
+            .Where(e => (e.PbctBegnDtm >= from && e.PbctBegnDtm < toExclusive)
+                || (e.PbctClsDtm >= from && e.PbctClsDtm < toExclusive))
+            .OrderBy(e => e.PbctBegnDtm)
+            .ToListAsync(ct);
+    }
+
+    /// <inheritdoc />
+    public async Task<(IReadOnlyList<InstitutionAuctionItem> Items, int TotalCount)> SearchAsync(
+        string keyword,
+        int limit,
+        CancellationToken ct = default)
+    {
+        IQueryable<InstitutionAuctionItem> query = db.InstitutionAuctionItems
+            .AsNoTracking()
+            .Where(e => e.PlnmNm.Contains(keyword));
+
+        var totalCount = await query.CountAsync(ct);
+
+        List<InstitutionAuctionItem> items = await query
+            .OrderByDescending(e => e.PbctBegnDtm)
+            .Take(limit)
+            .ToListAsync(ct);
+
+        return (items, totalCount);
+    }
 }

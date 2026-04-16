@@ -99,4 +99,41 @@ internal sealed class KamcoAuctionItemRepository(AuctionDbContext db) : IKamcoAu
 
         return (items, totalCount);
     }
+
+    /// <inheritdoc />
+    public async Task<IReadOnlyList<KamcoAuctionItem>> GetByDateRangeAsync(
+        DateTimeOffset from,
+        DateTimeOffset toExclusive,
+        CancellationToken ct = default)
+    {
+        return await db.KamcoAuctionItems
+            .AsNoTracking()
+            .Where(e => (e.PbctBegnDtm >= from && e.PbctBegnDtm < toExclusive)
+                || (e.PbctClsDtm >= from && e.PbctClsDtm < toExclusive))
+            .OrderBy(e => e.PbctBegnDtm)
+            .ToListAsync(ct);
+    }
+
+    /// <inheritdoc />
+    public async Task<(IReadOnlyList<KamcoAuctionItem> Items, int TotalCount)> SearchAsync(
+        string keyword,
+        int limit,
+        CancellationToken ct = default)
+    {
+        IQueryable<KamcoAuctionItem> query = db.KamcoAuctionItems
+            .AsNoTracking()
+            .Where(e =>
+                e.CltrNm.Contains(keyword) ||
+                e.LdnmAdrs.Contains(keyword) ||
+                e.NmrdAdrs.Contains(keyword));
+
+        var totalCount = await query.CountAsync(ct);
+
+        List<KamcoAuctionItem> items = await query
+            .OrderByDescending(e => e.PbctBegnDtm)
+            .Take(limit)
+            .ToListAsync(ct);
+
+        return (items, totalCount);
+    }
 }

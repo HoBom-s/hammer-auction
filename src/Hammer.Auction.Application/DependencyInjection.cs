@@ -3,15 +3,20 @@ using Hammer.Auction.Application.Notifications;
 using Hammer.Auction.Application.Ports;
 using Hammer.Auction.Application.UseCases.CreateQuiz;
 using Hammer.Auction.Application.UseCases.DeleteQuiz;
+using Hammer.Auction.Application.UseCases.DeleteSearchHistory;
 using Hammer.Auction.Application.UseCases.GetAuctionItemById;
 using Hammer.Auction.Application.UseCases.GetAuctionItems;
+using Hammer.Auction.Application.UseCases.GetCalendarSchedules;
 using Hammer.Auction.Application.UseCases.GetCodeInfoById;
 using Hammer.Auction.Application.UseCases.GetCodeInfos;
 using Hammer.Auction.Application.UseCases.GetDashboardSummary;
 using Hammer.Auction.Application.UseCases.GetInstitutionAuctionItemById;
 using Hammer.Auction.Application.UseCases.GetInstitutionAuctionItems;
+using Hammer.Auction.Application.UseCases.GetPopularSearchTerms;
 using Hammer.Auction.Application.UseCases.GetQuizzes;
 using Hammer.Auction.Application.UseCases.GetRandomQuiz;
+using Hammer.Auction.Application.UseCases.GetRecentSearchTerms;
+using Hammer.Auction.Application.UseCases.SearchAuctions;
 using Hammer.Auction.Application.UseCases.SubmitQuizAttempt;
 using Hammer.Auction.Application.UseCases.UpdateQuiz;
 using Microsoft.Extensions.DependencyInjection;
@@ -44,6 +49,11 @@ public static class DependencyInjection
         services.AddScoped<IGetQuizzesUseCase, GetQuizzesUseCase>();
         services.AddScoped<ISubmitQuizAttemptUseCase, SubmitQuizAttemptUseCase>();
         services.AddScoped<INotificationSender, NotificationSender>();
+        services.AddScoped<IGetCalendarSchedulesUseCase, GetCalendarSchedulesUseCase>();
+        services.AddScoped<ISearchAuctionsUseCase, SearchAuctionsUseCase>();
+        services.AddScoped<IGetPopularSearchTermsUseCase, GetPopularSearchTermsUseCase>();
+        services.AddScoped<IGetRecentSearchTermsUseCase, GetRecentSearchTermsUseCase>();
+        services.AddScoped<IDeleteSearchHistoryUseCase, DeleteSearchHistoryUseCase>();
         return services;
     }
 }

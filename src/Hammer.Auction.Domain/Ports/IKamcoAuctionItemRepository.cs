@@ -45,4 +45,20 @@ public interface IKamcoAuctionItemRepository
         DateTimeOffset? createdFrom,
         DateTimeOffset? createdTo,
         CancellationToken ct = default);
+
+    /// <summary>
+    /// Retrieves items whose bid period overlaps the given date range.
+    /// </summary>
+    public Task<IReadOnlyList<KamcoAuctionItem>> GetByDateRangeAsync(
+        DateTimeOffset from,
+        DateTimeOffset toExclusive,
+        CancellationToken ct = default);
+
+    /// <summary>
+    /// Searches items by keyword across name and address fields.
+    /// </summary>
+    public Task<(IReadOnlyList<KamcoAuctionItem> Items, int TotalCount)> SearchAsync(
+        string keyword,
+        int limit,
+        CancellationToken ct = default);
 }
