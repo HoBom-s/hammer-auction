@@ -44,6 +44,7 @@ internal sealed partial class DataCleanupWorker(
         DateTimeOffset kamcoCutoff = now.AddDays(-settings.KamcoRetentionDays);
         DateTimeOffset institutionCutoff = now.AddDays(-settings.InstitutionRetentionDays);
         DateTimeOffset tradeCutoff = now.AddDays(-settings.RealEstateTradeRetentionDays);
+        DateTimeOffset searchLogCutoff = now.AddDays(-settings.SearchLogRetentionDays);
 
         using IServiceScope scope = scopeFactory.CreateScope();
         AuctionDbContext db = scope.ServiceProvider.GetRequiredService<AuctionDbContext>();
@@ -69,7 +70,11 @@ internal sealed partial class DataCleanupWorker(
                 || e.RetryCount >= outboxSettings.MaxRetryCount)
             .ExecuteDeleteAsync(ct);
 
-        LogCleanupCompleted(logger, kamcoDeleted, institutionDeleted, tradeDeleted, outboxDeleted);
+        var searchLogDeleted = await db.SearchLogs
+            .Where(e => e.SearchedAt < searchLogCutoff)
+            .ExecuteDeleteAsync(ct);
+
+        LogCleanupCompleted(logger, kamcoDeleted, institutionDeleted, tradeDeleted, outboxDeleted, searchLogDeleted);
     }
 
     /// <inheritdoc />
@@ -109,8 +114,8 @@ internal sealed partial class DataCleanupWorker(
 
     [LoggerMessage(
         Level = LogLevel.Information,
-        Message = "Data cleanup completed: KAMCO={KamcoDeleted}, Institution={InstitutionDeleted}, RealEstateTrade={TradeDeleted}, Outbox={OutboxDeleted}")]
-    private static partial void LogCleanupCompleted(ILogger logger, int kamcoDeleted, int institutionDeleted, int tradeDeleted, int outboxDeleted);
+        Message = "Data cleanup completed: KAMCO={KamcoDeleted}, Institution={InstitutionDeleted}, RealEstateTrade={TradeDeleted}, Outbox={OutboxDeleted}, SearchLog={SearchLogDeleted}")]
+    private static partial void LogCleanupCompleted(ILogger logger, int kamcoDeleted, int institutionDeleted, int tradeDeleted, int outboxDeleted, int searchLogDeleted);
 
     [LoggerMessage(Level = LogLevel.Error, Message = "Data cleanup failed")]
     private static partial void LogCleanupFailed(ILogger logger, Exception ex);

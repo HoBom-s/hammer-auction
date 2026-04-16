@@ -44,6 +44,11 @@ public sealed class AuctionDbContext(DbContextOptions<AuctionDbContext> options)
     /// </summary>
     public DbSet<OutboxMessage> OutboxMessages => Set<OutboxMessage>();
 
+    /// <summary>
+    /// Gets the search logs table.
+    /// </summary>
+    public DbSet<SearchLog> SearchLogs => Set<SearchLog>();
+
     /// <inheritdoc />
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

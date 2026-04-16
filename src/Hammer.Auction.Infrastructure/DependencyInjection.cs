@@ -42,6 +42,7 @@ public static class DependencyInjection
         services.AddScoped<IQuizRepository, QuizRepository>();
         services.AddScoped<IQuizAttemptRepository, QuizAttemptRepository>();
         services.AddScoped<IOutboxWriter, OutboxWriter>();
+        services.AddScoped<ISearchLogRepository, SearchLogRepository>();
 
         if (!string.IsNullOrWhiteSpace(configuration["Kafka:BootstrapServers"]))
         {

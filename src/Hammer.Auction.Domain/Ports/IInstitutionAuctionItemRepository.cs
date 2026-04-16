@@ -23,4 +23,20 @@ public interface IInstitutionAuctionItemRepository
         string? category,
         string? keyword,
         CancellationToken ct = default);
+
+    /// <summary>
+    /// Retrieves items whose bid period overlaps the given date range.
+    /// </summary>
+    public Task<IReadOnlyList<InstitutionAuctionItem>> GetByDateRangeAsync(
+        DateTimeOffset from,
+        DateTimeOffset toExclusive,
+        CancellationToken ct = default);
+
+    /// <summary>
+    /// Searches items by keyword across announcement name.
+    /// </summary>
+    public Task<(IReadOnlyList<InstitutionAuctionItem> Items, int TotalCount)> SearchAsync(
+        string keyword,
+        int limit,
+        CancellationToken ct = default);
 }
