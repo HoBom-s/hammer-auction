@@ -16,7 +16,9 @@ internal sealed class SubmitQuizAttemptUseCase(
     IQuizRepository quizRepository,
     IQuizAttemptRepository attemptRepository,
     IDeviceTokenClient deviceTokenClient,
-    INotificationSender notificationSender) : ISubmitQuizAttemptUseCase
+    INotificationSender notificationSender,
+    INotificationRepository notificationRepository,
+    INotificationSettingRepository notificationSettingRepository) : ISubmitQuizAttemptUseCase
 {
     /// <inheritdoc />
     public async Task<QuizAttemptResponse> ExecuteAsync(
@@ -36,17 +38,31 @@ internal sealed class SubmitQuizAttemptUseCase(
 
         attemptRepository.Add(attempt);
 
-        var pushToken = await deviceTokenClient.GetPushTokenAsync(userId.Value, ct);
-        if (pushToken is not null)
+        NotificationSetting? setting = await notificationSettingRepository.GetByUserIdAsync(userId.Value, ct);
+        var notificationsEnabled = setting?.IsEnabled ?? true;
+
+        if (notificationsEnabled)
         {
-            notificationSender.Send(new NotificationPayload(
-                "quiz_result",
-                pushToken,
-                new Dictionary<string, string>
-                {
-                    ["isCorrect"] = isCorrect.ToString(),
-                    ["question"] = quiz.Question,
-                }));
+            var title = isCorrect ? "정답입니다!" : "오답입니다";
+            var body = isCorrect
+                ? $"'{quiz.Question}' 퀴즈를 맞혔습니다."
+                : $"'{quiz.Question}' 퀴즈의 정답을 확인해보세요.";
+
+            var notification = Notification.Create(userId, "quiz_result", title, body);
+            notificationRepository.Add(notification);
+
+            var pushToken = await deviceTokenClient.GetPushTokenAsync(userId.Value, ct);
+            if (pushToken is not null)
+            {
+                notificationSender.Send(new NotificationPayload(
+                    "quiz_result",
+                    pushToken,
+                    new Dictionary<string, string>
+                    {
+                        ["isCorrect"] = isCorrect.ToString(),
+                        ["question"] = quiz.Question,
+                    }));
+            }
         }
 
         await attemptRepository.SaveChangesAsync(ct);
