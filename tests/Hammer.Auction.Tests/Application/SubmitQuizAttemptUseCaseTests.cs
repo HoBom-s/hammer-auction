@@ -17,7 +17,9 @@ public sealed class SubmitQuizAttemptUseCaseTests
 {
     private readonly IQuizAttemptRepository _attemptRepository = Substitute.For<IQuizAttemptRepository>();
     private readonly IDeviceTokenClient _deviceTokenClient = Substitute.For<IDeviceTokenClient>();
+    private readonly INotificationRepository _notificationRepository = Substitute.For<INotificationRepository>();
     private readonly INotificationSender _notificationSender = Substitute.For<INotificationSender>();
+    private readonly INotificationSettingRepository _notificationSettingRepository = Substitute.For<INotificationSettingRepository>();
     private readonly IQuizRepository _quizRepository = Substitute.For<IQuizRepository>();
     private readonly SubmitQuizAttemptUseCase _sut;
 
@@ -27,7 +29,9 @@ public sealed class SubmitQuizAttemptUseCaseTests
             _quizRepository,
             _attemptRepository,
             _deviceTokenClient,
-            _notificationSender);
+            _notificationSender,
+            _notificationRepository,
+            _notificationSettingRepository);
     }
 
     [Fact]

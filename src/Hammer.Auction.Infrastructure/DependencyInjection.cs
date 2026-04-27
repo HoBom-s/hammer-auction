@@ -41,6 +41,8 @@ public static class DependencyInjection
         services.AddScoped<IRealEstateTradeRepository, RealEstateTradeRepository>();
         services.AddScoped<IQuizRepository, QuizRepository>();
         services.AddScoped<IQuizAttemptRepository, QuizAttemptRepository>();
+        services.AddScoped<INotificationRepository, NotificationRepository>();
+        services.AddScoped<INotificationSettingRepository, NotificationSettingRepository>();
         services.AddScoped<IOutboxWriter, OutboxWriter>();
         services.AddScoped<ISearchLogRepository, SearchLogRepository>();
 

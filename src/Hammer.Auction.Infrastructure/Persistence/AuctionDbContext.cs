@@ -49,6 +49,16 @@ public sealed class AuctionDbContext(DbContextOptions<AuctionDbContext> options)
     /// </summary>
     public DbSet<SearchLog> SearchLogs => Set<SearchLog>();
 
+    /// <summary>
+    /// Gets the notifications table.
+    /// </summary>
+    public DbSet<Notification> Notifications => Set<Notification>();
+
+    /// <summary>
+    /// Gets the notification settings table.
+    /// </summary>
+    public DbSet<NotificationSetting> NotificationSettings => Set<NotificationSetting>();
+
     /// <inheritdoc />
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
