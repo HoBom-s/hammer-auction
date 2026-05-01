@@ -17,7 +17,7 @@ internal sealed class GetDashboardSummaryUseCase(
     public async Task<DashboardSummaryResponse> ExecuteAsync(CancellationToken ct = default)
     {
         DateTimeOffset nowKst = DateTimeOffset.UtcNow.ToOffset(_kst);
-        var todayStart = new DateTimeOffset(nowKst.Date, _kst);
+        DateTimeOffset todayStart = new DateTimeOffset(nowKst.Date, _kst).ToUniversalTime();
         DateTimeOffset yesterdayStart = todayStart.AddDays(-1);
 
         IReadOnlyList<(string CtgrFullNm, int Count)> totalCounts =
