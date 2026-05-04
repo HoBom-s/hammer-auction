@@ -26,31 +26,6 @@ internal sealed class QuizRepository(AuctionDbContext db) : IQuizRepository
     }
 
     /// <inheritdoc />
-    public async Task<(IReadOnlyList<Quiz> Items, int TotalCount)> GetPagedAsync(
-        int page,
-        int size,
-        CancellationToken ct = default)
-    {
-        var totalCount = await db.Quizzes.CountAsync(ct);
-
-        List<Quiz> items = await db.Quizzes
-            .OrderByDescending(q => q.CreatedAt)
-            .Skip((page - 1) * size)
-            .Take(size)
-            .ToListAsync(ct);
-
-        return (items, totalCount);
-    }
-
-    /// <inheritdoc />
-    public void Add(Quiz quiz) =>
-        db.Quizzes.Add(quiz);
-
-    /// <inheritdoc />
-    public void Remove(Quiz quiz) =>
-        db.Quizzes.Remove(quiz);
-
-    /// <inheritdoc />
     public async Task SaveChangesAsync(CancellationToken ct = default) =>
         await db.SaveChangesAsync(ct);
 }
