@@ -14,7 +14,7 @@ namespace Hammer.Auction.Infrastructure.Http;
 [SuppressMessage("Microsoft.Performance", "CA1812:AvoidUninstantiatedInternalClasses", Justification = "Instantiated via DI")]
 internal sealed class QuizClient(HttpClient httpClient, ILogger<QuizClient> logger) : IQuizClient
 {
-    private static readonly JsonSerializerOptions JsonOptions = new() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
+    private static readonly JsonSerializerOptions _jsonOptions = new() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
 
     public async Task<IReadOnlyList<QuizResponse>> GetRandomAsync(int count, CancellationToken ct = default)
     {
@@ -26,7 +26,7 @@ internal sealed class QuizClient(HttpClient httpClient, ILogger<QuizClient> logg
 
             response.EnsureSuccessStatusCode();
 
-            List<QuizResponse>? result = await response.Content.ReadFromJsonAsync<List<QuizResponse>>(JsonOptions, ct);
+            List<QuizResponse>? result = await response.Content.ReadFromJsonAsync<List<QuizResponse>>(_jsonOptions, ct);
             return result ?? [];
         }
         catch (HttpRequestException ex)
@@ -49,7 +49,7 @@ internal sealed class QuizClient(HttpClient httpClient, ILogger<QuizClient> logg
 
             response.EnsureSuccessStatusCode();
 
-            return await response.Content.ReadFromJsonAsync<QuizResponse>(JsonOptions, ct);
+            return await response.Content.ReadFromJsonAsync<QuizResponse>(_jsonOptions, ct);
         }
         catch (HttpRequestException ex)
         {
