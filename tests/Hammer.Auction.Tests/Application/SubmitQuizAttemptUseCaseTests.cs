@@ -20,13 +20,13 @@ public sealed class SubmitQuizAttemptUseCaseTests
     private readonly INotificationRepository _notificationRepository = Substitute.For<INotificationRepository>();
     private readonly INotificationSender _notificationSender = Substitute.For<INotificationSender>();
     private readonly INotificationSettingRepository _notificationSettingRepository = Substitute.For<INotificationSettingRepository>();
-    private readonly IQuizRepository _quizRepository = Substitute.For<IQuizRepository>();
+    private readonly IQuizClient _quizClient = Substitute.For<IQuizClient>();
     private readonly SubmitQuizAttemptUseCase _sut;
 
     public SubmitQuizAttemptUseCaseTests()
     {
         _sut = new SubmitQuizAttemptUseCase(
-            _quizRepository,
+            _quizClient,
             _attemptRepository,
             _deviceTokenClient,
             _notificationSender,
@@ -37,8 +37,8 @@ public sealed class SubmitQuizAttemptUseCaseTests
     [Fact]
     public async Task ExecuteAsync_WithCorrectAnswer_ShouldReturnIsCorrectTrueAsync()
     {
-        Quiz quiz = CreateQuiz(1, 2);
-        _quizRepository.GetByIdAsync(new QuizId(1), Arg.Any<CancellationToken>()).Returns(quiz);
+        QuizResponse quiz = CreateQuizResponse(1, 2);
+        _quizClient.GetByIdAsync(1, Arg.Any<CancellationToken>()).Returns(quiz);
         SubmitQuizAttemptRequest request = new(2);
 
         QuizAttemptResponse result = await _sut.ExecuteAsync(
@@ -55,8 +55,8 @@ public sealed class SubmitQuizAttemptUseCaseTests
     [Fact]
     public async Task ExecuteAsync_WithWrongAnswer_ShouldReturnIsCorrectFalseAsync()
     {
-        Quiz quiz = CreateQuiz(1, 2);
-        _quizRepository.GetByIdAsync(new QuizId(1), Arg.Any<CancellationToken>()).Returns(quiz);
+        QuizResponse quiz = CreateQuizResponse(1, 2);
+        _quizClient.GetByIdAsync(1, Arg.Any<CancellationToken>()).Returns(quiz);
         SubmitQuizAttemptRequest request = new(0);
 
         QuizAttemptResponse result = await _sut.ExecuteAsync(
@@ -71,7 +71,7 @@ public sealed class SubmitQuizAttemptUseCaseTests
     [Fact]
     public async Task ExecuteAsync_WithNonExistentQuiz_ShouldThrowNotFoundExceptionAsync()
     {
-        _quizRepository.GetByIdAsync(new QuizId(999), Arg.Any<CancellationToken>()).Returns((Quiz?)null);
+        _quizClient.GetByIdAsync(999, Arg.Any<CancellationToken>()).Returns((QuizResponse?)null);
         SubmitQuizAttemptRequest request = new(0);
 
         Func<Task> act = () => _sut.ExecuteAsync(
@@ -96,8 +96,8 @@ public sealed class SubmitQuizAttemptUseCaseTests
     [Fact]
     public async Task ExecuteAsync_WithAnonymousUser_ShouldSucceedAsync()
     {
-        Quiz quiz = CreateQuiz(1, 0);
-        _quizRepository.GetByIdAsync(new QuizId(1), Arg.Any<CancellationToken>()).Returns(quiz);
+        QuizResponse quiz = CreateQuizResponse(1, 0);
+        _quizClient.GetByIdAsync(1, Arg.Any<CancellationToken>()).Returns(quiz);
         SubmitQuizAttemptRequest request = new(0);
 
         QuizAttemptResponse result = await _sut.ExecuteAsync(
@@ -111,8 +111,8 @@ public sealed class SubmitQuizAttemptUseCaseTests
     [Fact]
     public async Task ExecuteAsync_ShouldSendNotification_WhenDeviceTokenExistsAsync()
     {
-        Quiz quiz = CreateQuiz(1, 2);
-        _quizRepository.GetByIdAsync(new QuizId(1), Arg.Any<CancellationToken>()).Returns(quiz);
+        QuizResponse quiz = CreateQuizResponse(1, 2);
+        _quizClient.GetByIdAsync(1, Arg.Any<CancellationToken>()).Returns(quiz);
         _deviceTokenClient.GetPushTokenAsync("user-1", Arg.Any<CancellationToken>())
             .Returns("ExponentPushToken[abc123]");
         SubmitQuizAttemptRequest request = new(2);
@@ -132,8 +132,8 @@ public sealed class SubmitQuizAttemptUseCaseTests
     [Fact]
     public async Task ExecuteAsync_ShouldSkipNotification_WhenNoDeviceTokenAsync()
     {
-        Quiz quiz = CreateQuiz(1, 0);
-        _quizRepository.GetByIdAsync(new QuizId(1), Arg.Any<CancellationToken>()).Returns(quiz);
+        QuizResponse quiz = CreateQuizResponse(1, 0);
+        _quizClient.GetByIdAsync(1, Arg.Any<CancellationToken>()).Returns(quiz);
         _deviceTokenClient.GetPushTokenAsync("user-1", Arg.Any<CancellationToken>())
             .Returns((string?)null);
         SubmitQuizAttemptRequest request = new(0);
@@ -150,8 +150,8 @@ public sealed class SubmitQuizAttemptUseCaseTests
     [Fact]
     public async Task ExecuteAsync_ShouldStillSucceed_WhenTokenClientReturnsNullAsync()
     {
-        Quiz quiz = CreateQuiz(1, 1);
-        _quizRepository.GetByIdAsync(new QuizId(1), Arg.Any<CancellationToken>()).Returns(quiz);
+        QuizResponse quiz = CreateQuizResponse(1, 1);
+        _quizClient.GetByIdAsync(1, Arg.Any<CancellationToken>()).Returns(quiz);
         _deviceTokenClient.GetPushTokenAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns((string?)null);
         SubmitQuizAttemptRequest request = new(1);
@@ -167,12 +167,6 @@ public sealed class SubmitQuizAttemptUseCaseTests
         await _attemptRepository.Received(1).SaveChangesAsync(Arg.Any<CancellationToken>());
     }
 
-    private static Quiz CreateQuiz(long id, int correctIndex = 0)
-    {
-        var quiz = Quiz.Create("Q", "A", "B", "C", "D", correctIndex, "E");
-
-        typeof(Quiz).GetProperty(nameof(Quiz.Id))!.SetValue(quiz, id);
-
-        return quiz;
-    }
+    private static QuizResponse CreateQuizResponse(long id, int correctIndex = 0) =>
+        new(id, "Q", ["A", "B", "C", "D"], correctIndex, "E");
 }

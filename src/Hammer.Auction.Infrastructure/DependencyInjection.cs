@@ -39,7 +39,6 @@ public static class DependencyInjection
         services.AddScoped<IInstitutionAuctionItemRepository, InstitutionAuctionItemRepository>();
         services.AddScoped<IOnbidCodeInfoRepository, OnbidCodeInfoRepository>();
         services.AddScoped<IRealEstateTradeRepository, RealEstateTradeRepository>();
-        services.AddScoped<IQuizRepository, QuizRepository>();
         services.AddScoped<IQuizAttemptRepository, QuizAttemptRepository>();
         services.AddScoped<INotificationRepository, NotificationRepository>();
         services.AddScoped<INotificationSettingRepository, NotificationSettingRepository>();
@@ -68,6 +67,16 @@ public static class DependencyInjection
         services.AddHttpClient<IDeviceTokenClient, DeviceTokenClient>(client =>
         {
             var baseUri = configuration["UserApi:BaseUri"];
+
+            if (!string.IsNullOrWhiteSpace(baseUri))
+                client.BaseAddress = new Uri(baseUri);
+        });
+
+        services.Configure<InternalApiSettings>(configuration.GetSection("InternalApi"));
+
+        services.AddHttpClient<IQuizClient, QuizClient>(client =>
+        {
+            var baseUri = configuration["InternalApi:BaseUri"];
 
             if (!string.IsNullOrWhiteSpace(baseUri))
                 client.BaseAddress = new Uri(baseUri);

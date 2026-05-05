@@ -20,11 +20,6 @@ public sealed class QuizAttemptConfiguration : IEntityTypeConfiguration<QuizAtte
 
         builder.Property(e => e.UserId).IsRequired().HasMaxLength(100);
 
-        builder.HasOne<Quiz>()
-            .WithMany()
-            .HasForeignKey(e => e.QuizId)
-            .OnDelete(DeleteBehavior.SetNull);
-
         builder.HasIndex(e => e.UserId);
         builder.HasIndex(e => new { e.UserId, e.QuizId });
     }

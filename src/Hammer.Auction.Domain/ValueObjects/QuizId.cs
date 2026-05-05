@@ -3,7 +3,7 @@ using System.Globalization;
 namespace Hammer.Auction.Domain.ValueObjects;
 
 /// <summary>
-///     Strongly-typed identifier for a <see cref="Entities.Quiz" />.
+///     Strongly-typed identifier for a quiz.
 /// </summary>
 public readonly record struct QuizId : IParsable<QuizId>
 {

@@ -13,7 +13,7 @@ namespace Hammer.Auction.Application.UseCases.SubmitQuizAttempt;
 /// </summary>
 [SuppressMessage("Microsoft.Performance", "CA1812:AvoidUninstantiatedInternalClasses", Justification = "Instantiated via DI")]
 internal sealed class SubmitQuizAttemptUseCase(
-    IQuizRepository quizRepository,
+    IQuizClient quizClient,
     IQuizAttemptRepository attemptRepository,
     IDeviceTokenClient deviceTokenClient,
     INotificationSender notificationSender,
@@ -29,7 +29,7 @@ internal sealed class SubmitQuizAttemptUseCase(
     {
         ArgumentNullException.ThrowIfNull(request);
 
-        Quiz quiz = await quizRepository.GetByIdAsync(quizId, ct)
+        QuizResponse quiz = await quizClient.GetByIdAsync(quizId.Value, ct)
             ?? throw new NotFoundException($"Quiz {quizId} not found.");
 
         var isCorrect = quiz.CorrectIndex == request.SelectedIndex;
