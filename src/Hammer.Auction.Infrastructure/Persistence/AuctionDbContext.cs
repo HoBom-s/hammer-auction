@@ -30,11 +30,6 @@ public sealed class AuctionDbContext(DbContextOptions<AuctionDbContext> options)
     public DbSet<RealEstateTrade> RealEstateTrades => Set<RealEstateTrade>();
 
     /// <summary>
-    /// Gets the quiz questions table.
-    /// </summary>
-    public DbSet<Quiz> Quizzes => Set<Quiz>();
-
-    /// <summary>
     /// Gets the quiz attempts table.
     /// </summary>
     public DbSet<QuizAttempt> QuizAttempts => Set<QuizAttempt>();

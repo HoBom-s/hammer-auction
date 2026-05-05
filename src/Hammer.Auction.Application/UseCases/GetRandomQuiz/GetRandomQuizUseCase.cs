@@ -1,16 +1,15 @@
 using System.Diagnostics.CodeAnalysis;
 using Hammer.Auction.Application.Common;
 using Hammer.Auction.Application.Exceptions;
-using Hammer.Auction.Domain.Entities;
-using Hammer.Auction.Domain.Ports;
+using Hammer.Auction.Application.Ports;
 
 namespace Hammer.Auction.Application.UseCases.GetRandomQuiz;
 
 /// <summary>
-/// Retrieves random quiz questions from the repository.
+/// Retrieves random quiz questions from hammer-internal.
 /// </summary>
 [SuppressMessage("Microsoft.Performance", "CA1812:AvoidUninstantiatedInternalClasses", Justification = "Instantiated via DI")]
-internal sealed class GetRandomQuizUseCase(IQuizRepository repository) : IGetRandomQuizUseCase
+internal sealed class GetRandomQuizUseCase(IQuizClient quizClient) : IGetRandomQuizUseCase
 {
     private const int MaxCount = 10;
 
@@ -20,11 +19,11 @@ internal sealed class GetRandomQuizUseCase(IQuizRepository repository) : IGetRan
         if (count is < 1 or > MaxCount)
             throw new BadRequestException($"Count must be between 1 and {MaxCount}, but was {count}.");
 
-        IReadOnlyList<Quiz> quizzes = await repository.GetRandomAsync(count, ct);
+        IReadOnlyList<QuizResponse> quizzes = await quizClient.GetRandomAsync(count, ct);
 
         if (quizzes.Count == 0)
             throw new NotFoundException("No quiz questions available.");
 
-        return quizzes.Select(QuizResponse.FromEntity).ToList();
+        return quizzes;
     }
 }

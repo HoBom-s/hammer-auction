@@ -1,9 +1,8 @@
 using FluentAssertions;
 using Hammer.Auction.Application.Common;
 using Hammer.Auction.Application.Exceptions;
+using Hammer.Auction.Application.Ports;
 using Hammer.Auction.Application.UseCases.GetRandomQuiz;
-using Hammer.Auction.Domain.Entities;
-using Hammer.Auction.Domain.Ports;
 using NSubstitute;
 
 namespace Hammer.Auction.Tests.Application;
@@ -13,19 +12,19 @@ namespace Hammer.Auction.Tests.Application;
 /// </summary>
 public sealed class GetRandomQuizUseCaseTests
 {
-    private readonly IQuizRepository _repository = Substitute.For<IQuizRepository>();
+    private readonly IQuizClient _quizClient = Substitute.For<IQuizClient>();
     private readonly GetRandomQuizUseCase _sut;
 
     public GetRandomQuizUseCaseTests()
     {
-        _sut = new GetRandomQuizUseCase(_repository);
+        _sut = new GetRandomQuizUseCase(_quizClient);
     }
 
     [Fact]
     public async Task ExecuteAsync_WithValidCount_ShouldReturnQuizzesAsync()
     {
-        List<Quiz> quizzes = [CreateQuiz(1), CreateQuiz(2), CreateQuiz(3)];
-        _repository.GetRandomAsync(3, Arg.Any<CancellationToken>()).Returns(quizzes);
+        List<QuizResponse> quizzes = [CreateQuizResponse(1), CreateQuizResponse(2), CreateQuizResponse(3)];
+        _quizClient.GetRandomAsync(3, Arg.Any<CancellationToken>()).Returns(quizzes);
 
         IReadOnlyList<QuizResponse> result = await _sut.ExecuteAsync(3);
 
@@ -44,10 +43,10 @@ public sealed class GetRandomQuizUseCaseTests
     }
 
     [Fact]
-    public async Task ExecuteAsync_WithEmptyRepository_ShouldThrowNotFoundExceptionAsync()
+    public async Task ExecuteAsync_WithEmptyResult_ShouldThrowNotFoundExceptionAsync()
     {
-        _repository.GetRandomAsync(3, Arg.Any<CancellationToken>())
-            .Returns(Array.Empty<Quiz>());
+        _quizClient.GetRandomAsync(3, Arg.Any<CancellationToken>())
+            .Returns(Array.Empty<QuizResponse>());
 
         Func<Task> act = () => _sut.ExecuteAsync(3);
 
@@ -55,10 +54,10 @@ public sealed class GetRandomQuizUseCaseTests
     }
 
     [Fact]
-    public async Task ExecuteAsync_ShouldMapResponseCorrectlyAsync()
+    public async Task ExecuteAsync_ShouldReturnResponseCorrectlyAsync()
     {
-        Quiz quiz = CreateQuiz(1);
-        _repository.GetRandomAsync(1, Arg.Any<CancellationToken>()).Returns(new[] { quiz });
+        QuizResponse quiz = CreateQuizResponse(1);
+        _quizClient.GetRandomAsync(1, Arg.Any<CancellationToken>()).Returns(new[] { quiz });
 
         IReadOnlyList<QuizResponse> result = await _sut.ExecuteAsync(1);
 
@@ -69,12 +68,6 @@ public sealed class GetRandomQuizUseCaseTests
         response.Explanation.Should().Be("E1");
     }
 
-    private static Quiz CreateQuiz(long id)
-    {
-        var quiz = Quiz.Create($"Q{id}", "A", "B", "C", "D", 0, $"E{id}");
-
-        typeof(Quiz).GetProperty(nameof(Quiz.Id))!.SetValue(quiz, id);
-
-        return quiz;
-    }
+    private static QuizResponse CreateQuizResponse(long id) =>
+        new(id, $"Q{id}", ["A", "B", "C", "D"], 0, $"E{id}");
 }
