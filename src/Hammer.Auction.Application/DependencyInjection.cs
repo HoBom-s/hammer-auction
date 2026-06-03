@@ -10,15 +10,19 @@ using Hammer.Auction.Application.UseCases.GetCodeInfos;
 using Hammer.Auction.Application.UseCases.GetDashboardSummary;
 using Hammer.Auction.Application.UseCases.GetInstitutionAuctionItemById;
 using Hammer.Auction.Application.UseCases.GetInstitutionAuctionItems;
+using Hammer.Auction.Application.UseCases.GetNewsById;
+using Hammer.Auction.Application.UseCases.GetNewsList;
 using Hammer.Auction.Application.UseCases.GetNotifications;
 using Hammer.Auction.Application.UseCases.GetNotificationSettings;
 using Hammer.Auction.Application.UseCases.GetPopularSearchTerms;
 using Hammer.Auction.Application.UseCases.GetRandomQuiz;
+using Hammer.Auction.Application.UseCases.GetRecentNews;
 using Hammer.Auction.Application.UseCases.GetRecentSearchTerms;
 using Hammer.Auction.Application.UseCases.GetUnreadNotificationCount;
 using Hammer.Auction.Application.UseCases.ReadAllNotifications;
 using Hammer.Auction.Application.UseCases.ReadNotification;
 using Hammer.Auction.Application.UseCases.SearchAuctions;
+using Hammer.Auction.Application.UseCases.SearchNews;
 using Hammer.Auction.Application.UseCases.SubmitQuizAttempt;
 using Hammer.Auction.Application.UseCases.UpdateNotificationSettings;
 using Microsoft.Extensions.DependencyInjection;
@@ -58,6 +62,10 @@ public static class DependencyInjection
         services.AddScoped<IReadAllNotificationsUseCase, ReadAllNotificationsUseCase>();
         services.AddScoped<IGetNotificationSettingsUseCase, GetNotificationSettingsUseCase>();
         services.AddScoped<IUpdateNotificationSettingsUseCase, UpdateNotificationSettingsUseCase>();
+        services.AddScoped<IGetRecentNewsUseCase, GetRecentNewsUseCase>();
+        services.AddScoped<IGetNewsByIdUseCase, GetNewsByIdUseCase>();
+        services.AddScoped<IGetNewsListUseCase, GetNewsListUseCase>();
+        services.AddScoped<ISearchNewsUseCase, SearchNewsUseCase>();
         return services;
     }
 }

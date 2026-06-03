@@ -82,6 +82,16 @@ public static class DependencyInjection
                 client.BaseAddress = new Uri(baseUri);
         });
 
+        services.Configure<SupportApiSettings>(configuration.GetSection("SupportApi"));
+
+        services.AddHttpClient<INewsClient, NewsClient>(client =>
+        {
+            var baseUri = configuration["SupportApi:BaseUri"];
+
+            if (!string.IsNullOrWhiteSpace(baseUri))
+                client.BaseAddress = new Uri(baseUri);
+        });
+
         services.Configure<OutboxSettings>(configuration.GetSection("Outbox"));
         services.Configure<CleanupSettings>(configuration.GetSection("Cleanup"));
         services.AddHostedService<DataCleanupWorker>();
