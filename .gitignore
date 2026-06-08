@@ -6,7 +6,9 @@ obj/
 *.userosscache
 *.sln.docstates
 
-## Build results
+## Build results (backslash paths from Windows/Rider)
+**/bin\\[Dd]ebug/
+**/obj\\[Dd]ebug/
 [Dd]ebug/
 [Rr]elease/
 x64/

@@ -1,0 +1,32 @@
+namespace Hammer.Auction.Application;
+
+/// <summary>
+/// Kafka topic names shared between producers and consumers.
+/// </summary>
+public static class KafkaTopics
+{
+    /// <summary>
+    /// KAMCO public auction items.
+    /// </summary>
+    public const string KamcoAuction = "onbid-kamco-auction";
+
+    /// <summary>
+    /// Institution public sale announcements.
+    /// </summary>
+    public const string InstitutionAuction = "onbid-institution-auction";
+
+    /// <summary>
+    /// Onbid category code information.
+    /// </summary>
+    public const string CodeInfo = "onbid-code-info";
+
+    /// <summary>
+    /// MOLIT real estate trade price data.
+    /// </summary>
+    public const string RealEstatePrice = "real-estate-market-price";
+
+    /// <summary>
+    /// 알림 발송 요청.
+    /// </summary>
+    public const string NotificationRequest = "notification-request";
+}

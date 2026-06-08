@@ -1,0 +1,24 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Hammer.Auction.Api/Hammer.Auction.Api.csproj" />
+    <Project Path="src/Hammer.Auction.Application/Hammer.Auction.Application.csproj" />
+    <Project Path="src/Hammer.Auction.Domain/Hammer.Auction.Domain.csproj" />
+    <Project Path="src/Hammer.Auction.Infrastructure/Hammer.Auction.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Hammer.Auction.Tests/Hammer.Auction.Tests.csproj" />
+  </Folder>
+  <Folder Name="/solution-items/">
+    <File Path=".gitignore" />
+    <File Path="README.md" />
+    <File Path=".editorconfig" />
+    <File Path=".github/workflows/ci.yml" />
+    <File Path="Dockerfile" />
+    <File Path=".dockerignore" />
+    <File Path="Jenkinsfile" />
+    <File Path=".env.example" />
+    <File Path=".env.local" />
+    <File Path=".env.dev" />
+    <File Path=".env.live" />
+  </Folder>
+</Solution>
