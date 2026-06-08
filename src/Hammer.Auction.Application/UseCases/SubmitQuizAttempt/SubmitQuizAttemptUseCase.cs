@@ -48,14 +48,14 @@ internal sealed class SubmitQuizAttemptUseCase(
                 ? $"'{quiz.Question}' 퀴즈를 맞혔습니다."
                 : $"'{quiz.Question}' 퀴즈의 정답을 확인해보세요.";
 
-            var notification = Notification.Create(userId, "quiz_result", title, body);
+            var notification = Notification.Create(userId, NotificationTemplateKeys.QuizResult, title, body);
             notificationRepository.Add(notification);
 
             var pushToken = await deviceTokenClient.GetPushTokenAsync(userId.Value, ct);
             if (pushToken is not null)
             {
                 notificationSender.Send(new NotificationPayload(
-                    "quiz_result",
+                    NotificationTemplateKeys.QuizResult,
                     pushToken,
                     new Dictionary<string, string>
                     {

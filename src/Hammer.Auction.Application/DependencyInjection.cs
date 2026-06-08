@@ -24,6 +24,7 @@ using Hammer.Auction.Application.UseCases.ReadNotification;
 using Hammer.Auction.Application.UseCases.SearchAuctions;
 using Hammer.Auction.Application.UseCases.SearchNews;
 using Hammer.Auction.Application.UseCases.SubmitQuizAttempt;
+using Hammer.Auction.Application.UseCases.SubmitQuizAttempts;
 using Hammer.Auction.Application.UseCases.UpdateNotificationSettings;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -50,6 +51,7 @@ public static class DependencyInjection
         services.AddScoped<IGetDashboardSummaryUseCase, GetDashboardSummaryUseCase>();
         services.AddScoped<IGetRandomQuizUseCase, GetRandomQuizUseCase>();
         services.AddScoped<ISubmitQuizAttemptUseCase, SubmitQuizAttemptUseCase>();
+        services.AddScoped<ISubmitQuizAttemptsUseCase, SubmitQuizAttemptsUseCase>();
         services.AddScoped<INotificationSender, NotificationSender>();
         services.AddScoped<IGetCalendarSchedulesUseCase, GetCalendarSchedulesUseCase>();
         services.AddScoped<ISearchAuctionsUseCase, SearchAuctionsUseCase>();
